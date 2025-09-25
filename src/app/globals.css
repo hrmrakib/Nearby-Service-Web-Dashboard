@@ -1,0 +1,113 @@
+@import "tailwindcss";
+@import "tw-animate-css";
+
+/* 1. Your global CSS variables (design tokens) */
+:root {
+  --radius: 0.5rem;
+
+  --border: 0 0% 80%;
+  --ring: 0 0% 50%;
+  --foreground: 0 0% 10%;
+  --primary-foreground: 0 0% 100%;
+  --secondary-foreground: 0 0% 10%;
+  --destructive: 0 80% 50%;
+  --destructive-foreground: 0 0% 98%;
+  --muted: 0 0% 96%;
+  --muted-foreground: 0 0% 50%;
+  --accent: 0 0% 96%;
+  --accent-foreground: 0 0% 10%;
+  --popover: 0 0% 100%;
+  --popover-foreground: 0 0% 10%;
+  --card: 0 0% 100%;
+  --card-foreground: 0 0% 10%; 
+}
+
+/* 2. Tailwind v4 theme mapping */
+@theme {
+  --color-goto: #fff;
+  --color-border: hsl(var(--border));
+  --color-input: #fff;
+  --color-button: #6eceda;
+  --color-button-color: #4a4a4a;
+  --color-ring: hsl(var(--ring));
+
+  --color-sidebar-bg: #ffffff;
+  --color-sidebar-link-bg: #feaa39;
+  --color-sidebar-color: #333338;
+  --color-sidebar-active-color: #ffffff;
+
+  --color-header-bg: #27484c;
+  --color-body-bg: #fff7eb;
+  --color-body-color: #e0e0e0;
+
+  --color-table-header-bg: #feaa39;
+  --color-table-header-color: #ffffff;
+  --color-star-card-bg: #27484c;
+  --color-star-card-color: #ebebeb;
+
+  --color-table-bg: #fff;
+  --color-table-color: #333338;
+  --color-setting-bg: #f2f2f2;
+  --color-setting-color: #62c1bf;
+  --color-border-color: #62c1bf;
+  --color-table-row-color: #767676;
+
+  --color-pagination-bg: #62c1bf;
+  --color-pagination-color: #224443;
+
+  --color-auth-form-bg: #315d62;
+  --color-auth-form-color: #eff9f9;
+
+  --color-input-bg: #58a5af;
+  --color-input-color: #f2f2f2;
+  --color-input-icon-color: #62c1bf;
+
+  --color-background: #ffffff;
+  --color-background2: #000;
+  --color-foreground: hsl(var(--foreground));
+
+  --color-primary: #000;
+  --color-primary-foreground: hsl(var(--primary-foreground));
+  --color-primary2: #726547;
+
+  --color-secondary: #c3c3c3;
+  --color-secondary-foreground: hsl(var(--secondary-foreground));
+
+  --color-destructive: hsl(var(--destructive));
+  --color-destructive-foreground: hsl(var(--destructive-foreground));
+
+  --color-muted: hsl(var(--muted));
+  --color-muted-foreground: hsl(var(--muted-foreground));
+
+  --color-accent: hsl(var(--accent));
+  --color-accent-foreground: hsl(var(--accent-foreground));
+
+  --color-popover: hsl(var(--popover));
+  --color-popover-foreground: hsl(var(--popover-foreground));
+
+  --color-card: hsl(var(--card));
+  --color-card-foreground: hsl(var(--card-foreground));
+
+  --color-teal-800: #1e4e4e;
+
+  --radius-lg: var(--radius);
+  --radius-md: calc(var(--radius) - 2px);
+  --radius-sm: calc(var(--radius) - 4px);
+}
+
+/* 3. Optional global styles */
+html,
+body {
+  @apply bg-body-bg text-body-color;
+}
+
+/* @custom-variant dark (&:is(.dark *)); */
+
+/* @layer base {
+  * {
+    @apply border-border outline-ring/50;
+  }
+  body {
+    @apply bg-background text-foreground;
+  }
+} */
