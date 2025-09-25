@@ -48,7 +48,7 @@ const StatCard = ({
   <Card className='bg-white border-0 shadow-lg'>
     <CardContent className='p-'>
       <div className='flex items-center gap-4'>
-        <div className='p-3 bg-[#aaa3a34f] rounded-full'>
+        <div className='w-16 h-16 flex items-center justify-center p-3 bg-[#BFDBFE] rounded-md'>
           <Icon className='h-6 w-6 text-gray-600' />
         </div>
         <div>

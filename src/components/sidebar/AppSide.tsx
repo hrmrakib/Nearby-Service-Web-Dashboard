@@ -3,7 +3,13 @@
 import type React from "react";
 
 import Link from "next/link";
-import { LayoutDashboard, Users, Settings } from "lucide-react";
+import {
+  LayoutDashboard,
+  Users,
+  Settings,
+  Handbag,
+  TriangleAlert,
+} from "lucide-react";
 import { cn } from "@/lib/utils";
 import {
   Sidebar,
@@ -47,10 +53,10 @@ export default function DashboardSidebar() {
           <SidebarContent>
             <Link
               href='/'
-              className='flex items-center justify-center gap-2 px-3 py-3'
+              className='flex items-center justify-center gap-2 px-3 py-6 lg:py-12'
             >
               <Image
-                src='/logo.png'
+                src='/logo.svg'
                 alt='logo'
                 width={140}
                 height={140}
@@ -67,31 +73,38 @@ export default function DashboardSidebar() {
               />
 
               <NavItem
-                href='/user-management'
+                href='/service-activities'
+                icon={Handbag}
+                label='Service Activities'
+                active={
+                  pathname === "/service-activities" ||
+                  pathname.startsWith("/service-activities")
+                }
+              />
+
+              <NavItem
+                href='/users'
                 icon={Users}
-                label='User Management'
+                label='Users'
+                active={pathname === "/users" || pathname.startsWith("/users/")}
+              />
+
+              <NavItem
+                href='/complaints'
+                icon={TriangleAlert}
+                label='Complaints'
                 active={
-                  pathname === "/user-management" ||
-                  pathname.startsWith("/user-management")
+                  pathname === "/complaints" ||
+                  pathname.startsWith("/complaints/")
                 }
               />
 
               <NavItem
-                href='/administrators'
-                icon={Settings}
-                label='Administrators'
-                active={
-                  pathname === "/administrators" ||
-                  pathname.startsWith("/administrators/")
-                }
-              />
-
-              <NavItem
-                href='/settings'
+                href='/setting'
                 icon={Settings}
                 label='Setting'
                 active={
-                  pathname === "/settings" || pathname.startsWith("/settings/")
+                  pathname === "/setting" || pathname.startsWith("/setting/")
                 }
               />
             </SidebarMenu>
@@ -162,7 +175,7 @@ function NavItem({ href, icon: Icon, label, active = true }: NavItemProps) {
         <Link
           href={href}
           className={cn(
-            "flex items-center gap-3 px-4 !py-5 transition-colors rounded-full",
+            "flex items-center gap-3 px-4 !py-5 transition-colors !rounded-full",
             active
               ? "bg-sidebar-link-bg text-sidebar-active-color"
               : "text-sidebar-color hover:bg-sidebar-link-bg hover:text-[#fff]"

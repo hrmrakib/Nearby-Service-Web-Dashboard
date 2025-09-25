@@ -1,14 +1,14 @@
 "use client";
 
 import React, { useState } from "react";
-import { Button } from "../ui/button";
 import { Bell } from "lucide-react";
 import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar";
 import { usePathname } from "next/navigation";
+import Link from "next/link";
 
 const Header = () => {
   const [admin, setAdmin] = useState({
-    name: "Daissy",
+    name: "Fozu Pagla",
     role: "Super admin",
     image: "/admin.jpeg",
   });
@@ -25,7 +25,7 @@ const Header = () => {
     return null;
   }
   return (
-    <div className='bg-white border-b border-gray-200'>
+    <div className='bg-white border-b border-gray-200 rounded-2xl'>
       <div className='max-w-8xl mx-auto px-6'>
         <div className='flex items-center justify-between py-6'>
           <div>
@@ -35,10 +35,12 @@ const Header = () => {
             <p className='text-gray-600 mt-1'>Have a nice day</p>
           </div>
           <div className='flex items-center gap-4'>
-            <Button variant='ghost' size='icon' className='relative'>
-              <Bell className='h-5 w-5' />
-              <span className='absolute -top-1 -right-1 h-3 w-3 bg-red-500 rounded-full'></span>
-            </Button>
+            <Link href='/' className='relative'>
+              <Bell className='h-8 w-8 text-[#17CA2A]' />
+              <span className='absolute -top-4 -right-2 p-1 bg-[#E8FAEA] font-medium text-[#17CA2A] text-xs rounded-full'>
+                9+
+              </span>
+            </Link>
             <div className='flex items-center gap-3'>
               <Avatar className='h-10 w-10'>
                 <AvatarImage src='/admin.jpeg' alt='Daissy' />

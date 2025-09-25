@@ -32,12 +32,12 @@
   --color-ring: hsl(var(--ring));
 
   --color-sidebar-bg: #ffffff;
-  --color-sidebar-link-bg: #feaa39;
+  --color-sidebar-link-bg: #17CA2A;
   --color-sidebar-color: #333338;
   --color-sidebar-active-color: #ffffff;
 
   --color-header-bg: #27484c;
-  --color-body-bg: #fff7eb;
+  --color-body-bg: #F6F6F6;
   --color-body-color: #e0e0e0;
 
   --color-table-header-bg: #feaa39;
