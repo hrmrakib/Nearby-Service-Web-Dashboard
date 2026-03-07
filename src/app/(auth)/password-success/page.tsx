@@ -9,7 +9,7 @@ export default function PasswordSuccessPage() {
   const router = useRouter();
 
   const handleSignIn = () => {
-    router.push("/auth/signin");
+    router.push("/auth/login");
   };
 
   const handleBack = () => {

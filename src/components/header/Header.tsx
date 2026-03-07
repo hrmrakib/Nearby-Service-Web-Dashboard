@@ -8,7 +8,7 @@ import Link from "next/link";
 
 const Header = () => {
   const [admin, setAdmin] = useState({
-    name: "Fozu Pagla",
+    name: "Foju Pagla",
     role: "Super admin",
     image: "/admin.jpeg",
   });
@@ -16,8 +16,8 @@ const Header = () => {
 
   if (
     pathname === "/signup" ||
-    pathname === "/signin" ||
-    pathname === "/forget-password" ||
+    pathname === "/login" ||
+    pathname === "/forgot-password" ||
     pathname === "/verify-password" ||
     pathname === "/verify-otp" ||
     pathname === "/reset-password"

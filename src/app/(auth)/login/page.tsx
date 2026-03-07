@@ -63,19 +63,27 @@ export default function SignInPage() {
   };
 
   return (
-    <div className='min-h-screen bg-orange-50 flex items-center justify-center p-4'>
-      <Card className='w-full max-w-xl bg-white shadow-lg border-0'>
+    <div className='min-h-[90vh] bg-[#F4F5FA] flex items-center justify-center p-4'>
+      <Card className='w-full max-w-md bg-white shadow-lg border-0'>
         <CardContent className='pb-8'>
           {/* Logo */}
-          <div className='flex items-center justify-center text-center'>
-            <Image src='/logo.png' alt='Logo' width={200} height={200} />
+          <div className='flex flex-col items-center justify-center text-center'>
+            <Image
+              src='/auth-logo.png'
+              alt='Logo'
+              width={200}
+              height={200}
+              className='w-32 h-24'
+            />
           </div>
 
           {/* Header */}
-          <div className='text-center mb-8'>
-            <h1 className='text-2xl font-bold text-gray-900 mb-2'>Sign in</h1>
-            <p className='text-gray-600 text-sm leading-relaxed'>
-              Enter your email address and password to access your account.
+          <div className='text-center my-5'>
+            <h1 className='text-2xl font-bold text-gray-900 mb-2'>
+              Welcome back!
+            </h1>
+            <p className='text-[#8B8D97] text-sm leading-relaxed'>
+              Login to your account
             </p>
           </div>
 
@@ -95,7 +103,7 @@ export default function SignInPage() {
                   placeholder='Enter your email'
                   value={formData.email}
                   onChange={handleInputChange}
-                  className={`pl-10 bg-gray-50 border-gray-200 focus:bg-white ${
+                  className={`pl-10 h-12 rounded-xl bg-gray-50 border-gray-200 focus:bg-white ${
                     errors.email ? "border-red-500" : ""
                   }`}
                 />
@@ -119,14 +127,14 @@ export default function SignInPage() {
                   placeholder='Min 8 character'
                   value={formData.password}
                   onChange={handleInputChange}
-                  className={`pl-10 pr-10 bg-gray-50 border-gray-200 focus:bg-white ${
+                  className={`pl-10  h-12 rounded-xl pr-10 bg-gray-50 border-gray-200 focus:bg-white ${
                     errors.password ? "border-red-500" : ""
                   }`}
                 />
                 <button
                   type='button'
                   onClick={() => setShowPassword(!showPassword)}
-                  className='absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600'
+                  className='absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-[#8B8D97]'
                 >
                   {showPassword ? (
                     <EyeOff className='h-4 w-4' />
@@ -143,8 +151,8 @@ export default function SignInPage() {
             {/* Forgot Password Link */}
             <div className='text-right'>
               <Link
-                href='/auth/forgot-password'
-                className='text-orange-500 text-sm hover:text-orange-600 transition-colors'
+                href='/forgot-password'
+                className='text-[#5570F1] text-sm hover:text-[#5570F1] transition-colors'
               >
                 Forgot password?
               </Link>
@@ -154,33 +162,10 @@ export default function SignInPage() {
             <Button
               type='submit'
               disabled={isLoading}
-              className='w-full bg-orange-500 hover:bg-orange-600 text-white font-medium py-3 rounded-lg transition-colors'
+              className='w-full h-12 bg-[#15B826] hover:bg-[#0fca22] text-white font-medium py-3 rounded-lg transition-colors'
             >
-              {isLoading ? "Signing In..." : "Sign in"}
+              {isLoading ? "Logining..." : "Login"}
             </Button>
-
-            {/* Divider */}
-            <div className='relative my-6'>
-              <div className='absolute inset-0 flex items-center'>
-                <div className='w-full border-t border-gray-200' />
-              </div>
-              <div className='relative flex justify-center text-sm'>
-                <span className='px-4 bg-white text-gray-500'>Or</span>
-              </div>
-            </div>
-
-            {/* Sign Up Link */}
-            <div className='text-center'>
-              <span className='text-gray-600 text-sm'>
-                Don&apos;t have an account?{" "}
-                <Link
-                  href='/auth/signup'
-                  className='text-orange-500 hover:text-orange-600 font-medium transition-colors'
-                >
-                  Sign up
-                </Link>
-              </span>
-            </div>
           </form>
         </CardContent>
       </Card>

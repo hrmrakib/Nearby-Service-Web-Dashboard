@@ -1,5 +1,5 @@
+"use client";
 import type React from "react";
-import "use client";
 import { useState, useRef, useEffect } from "react";
 import { ArrowLeft } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -9,7 +9,7 @@ import { useRouter } from "next/navigation";
 import Image from "next/image";
 
 export default function VerifyAccountPage() {
-  const [otp, setOtp] = useState(["", "", "", "", "", ""]);
+  const [otp, setOtp] = useState(["", "", "", ""]);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState("");
   const [isResending, setIsResending] = useState(false);
@@ -36,7 +36,7 @@ export default function VerifyAccountPage() {
     setError("");
 
     // Auto-focus next input
-    if (value && index < 5) {
+    if (value && index < 3) {
       inputRefs.current[index + 1]?.focus();
     }
   };
@@ -51,16 +51,16 @@ export default function VerifyAccountPage() {
     if (e.key === "v" && (e.ctrlKey || e.metaKey)) {
       e.preventDefault();
       navigator.clipboard.readText().then((text) => {
-        const digits = text.replace(/\D/g, "").slice(0, 6);
+        const digits = text.replace(/\D/g, "").slice(0, 4);
         const newOtp = [...otp];
-        for (let i = 0; i < 6; i++) {
+        for (let i = 0; i < 4; i++) {
           newOtp[i] = digits[i] || "";
         }
         setOtp(newOtp);
 
         // Focus on next empty input or last input
         const nextEmptyIndex = newOtp.findIndex((digit) => !digit);
-        const focusIndex = nextEmptyIndex === -1 ? 5 : nextEmptyIndex;
+        const focusIndex = nextEmptyIndex === -1 ? 3 : nextEmptyIndex;
         inputRefs.current[focusIndex]?.focus();
       });
     }
@@ -70,8 +70,8 @@ export default function VerifyAccountPage() {
     e.preventDefault();
 
     const otpCode = otp.join("");
-    if (otpCode.length !== 6) {
-      setError("Please enter all 6 digits");
+    if (otpCode.length !== 4) {
+      setError("Please enter all 4 digits");
       return;
     }
 
@@ -82,11 +82,11 @@ export default function VerifyAccountPage() {
       // Simulate API call
       await new Promise((resolve) => setTimeout(resolve, 2000));
 
-      // For demo purposes, accept any 6-digit code
+      // For demo purposes, accept any 4-digit code
       console.log("[v0] OTP verification attempted:", otpCode);
 
       // Redirect to success page or dashboard
-      router.push("/auth/signin?verified=true");
+      router.push("/auth/login?verified=true");
     } catch (error) {
       setError("Invalid verification code. Please try again.");
       console.log(error);
@@ -105,7 +105,7 @@ export default function VerifyAccountPage() {
       console.log("[v0] Resend OTP requested");
 
       // Clear current OTP and focus first input
-      setOtp(["", "", "", "", "", ""]);
+      setOtp(["", "", "", ""]);
       inputRefs.current[0]?.focus();
     } catch (error) {
       setError("Failed to resend code. Please try again.");
@@ -116,7 +116,7 @@ export default function VerifyAccountPage() {
   };
 
   return (
-    <div className='min-h-screen bg-orange-50 flex items-center justify-center p-4'>
+    <div className='min-h-[90vh] bg-[#F4F5FA] flex items-center justify-center p-4'>
       <div className='w-full max-w-md'>
         <div className='bg-white rounded-2xl shadow-lg p-8 relative'>
           {/* Back Button */}
@@ -128,17 +128,23 @@ export default function VerifyAccountPage() {
           </Link>
 
           {/* Logo */}
-          <div className='flex items-center justify-center text-center'>
-            <Image src='/logo.png' alt='Logo' width={200} height={200} />
+          <div className='flex flex-col items-center justify-center text-center'>
+            <Image
+              src='/auth-logo.png'
+              alt='Logo'
+              width={200}
+              height={200}
+              className='w-32 h-24'
+            />
           </div>
 
           {/* Header */}
-          <div className='text-center mb-8'>
+          <div className='text-center my-6'>
             <h1 className='text-2xl font-bold text-gray-900 mb-3'>
               Verify Your Account
             </h1>
             <p className='text-gray-600 text-sm leading-relaxed'>
-              Please enter the 6-digit verification code we sent to your
+              Please enter the 4-digit verification code we sent to your
               registered email address.
             </p>
           </div>
@@ -159,7 +165,7 @@ export default function VerifyAccountPage() {
                   value={digit}
                   onChange={(e) => handleInputChange(index, e.target.value)}
                   onKeyDown={(e) => handleKeyDown(index, e)}
-                  className='w-12 h-12 text-center text-lg font-semibold border-2 rounded-full focus:border-orange-500 focus:ring-orange-500'
+                  className='w-14 h-14 text-center text-lg font-semibold border-2 rounded-full text-black focus:border-orange-500 focus:ring-orange-500'
                   placeholder='-'
                 />
               ))}
@@ -174,7 +180,7 @@ export default function VerifyAccountPage() {
             <Button
               type='submit'
               disabled={isLoading}
-              className='w-full bg-orange-500 hover:bg-orange-600 text-white py-3 rounded-xl font-medium transition-colors'
+              className='w-full h-12 bg-[#15B826] hover:bg-[#15B826] text-white py-3 rounded-xl font-medium transition-colors'
             >
               {isLoading ? "Verifying..." : "Verification"}
             </Button>
@@ -188,7 +194,7 @@ export default function VerifyAccountPage() {
                 type='button'
                 onClick={handleResendCode}
                 disabled={isResending}
-                className='text-orange-500 text-sm font-medium hover:text-orange-600 transition-colors disabled:opacity-50'
+                className='text-[#15B826] text-sm font-medium hover:text-[#15B826] transition-colors disabled:opacity-50'
               >
                 {isResending ? "Sending..." : "Resent Now"}
               </button>

@@ -26,8 +26,8 @@ export default function ResetPasswordPage() {
 
     if (!formData.password) {
       newErrors.password = "Password is required";
-    } else if (formData.password.length < 8 || formData.password.length > 10) {
-      newErrors.password = "Password must be 8-10 characters long";
+    } else if (formData.password.length < 6 || formData.password.length > 30) {
+      newErrors.password = "Password must be 6-30 characters long";
     }
 
     if (!formData.confirmPassword) {
@@ -52,7 +52,7 @@ export default function ResetPasswordPage() {
       await new Promise((resolve) => setTimeout(resolve, 2000));
 
       // Redirect to sign in page after successful password reset
-      router.push("/auth/signin");
+      router.push("/auth/login");
     } catch (error) {
       console.error("Password reset failed:", error);
     } finally {
@@ -68,7 +68,7 @@ export default function ResetPasswordPage() {
   };
 
   return (
-    <div className='min-h-screen bg-orange-50 flex items-center justify-center p-4'>
+    <div className='min-h-[90vh] bg-[#F4F5FA] flex items-center justify-center p-4'>
       <div className='w-full max-w-md bg-white rounded-2xl shadow-lg p-8 relative'>
         {/* Back Button */}
         <button
@@ -79,17 +79,23 @@ export default function ResetPasswordPage() {
         </button>
 
         {/* Logo */}
-        <div className='flex items-center justify-center text-center'>
-          <Image src='/logo.png' alt='Logo' width={200} height={200} />
+        <div className='flex flex-col items-center justify-center text-center'>
+          <Image
+            src='/auth-logo.png'
+            alt='Logo'
+            width={200}
+            height={200}
+            className='w-32 h-24'
+          />
         </div>
 
         {/* Header */}
-        <div className='text-center mb-8'>
+        <div className='text-center my-6'>
           <h1 className='text-2xl font-bold text-gray-900 mb-2'>
             Create New Password
           </h1>
           <p className='text-gray-600 text-sm'>
-            Your password must be 8-10 character long
+            Password must be 6-30 characters long
           </p>
         </div>
 
@@ -111,7 +117,7 @@ export default function ResetPasswordPage() {
                 placeholder='Enter new password'
                 value={formData.password}
                 onChange={(e) => handleInputChange("password", e.target.value)}
-                className={`pl-10 pr-10 h-12 bg-gray-50 border-gray-200 rounded-lg ${
+                className={`pl-10 pr-10 h-12 rounded-xl bg-gray-50 border-gray-200 ${
                   errors.password ? "border-red-500" : ""
                 }`}
               />
@@ -150,7 +156,7 @@ export default function ResetPasswordPage() {
                 onChange={(e) =>
                   handleInputChange("confirmPassword", e.target.value)
                 }
-                className={`pl-10 pr-10 h-12 bg-gray-50 border-gray-200 rounded-lg ${
+                className={`pl-10 pr-10 h-12 rounded-xl bg-gray-50 border-gray-200 ${
                   errors.confirmPassword ? "border-red-500" : ""
                 }`}
               />
@@ -177,7 +183,7 @@ export default function ResetPasswordPage() {
           <Button
             type='submit'
             disabled={isLoading}
-            className='w-full h-12 bg-orange-400 hover:bg-orange-500 text-white font-medium rounded-lg transition-colors'
+            className='w-full h-12 bg-[#15B826] hover:bg-[#12d625] text-white font-medium rounded-lg transition-colors'
           >
             {isLoading ? "Resetting Password..." : "Reset Password"}
           </Button>

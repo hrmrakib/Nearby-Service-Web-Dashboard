@@ -398,16 +398,16 @@ export default function UserManagement() {
                 key={user.id}
                 className='flex items-center justify-between gap-4 px-6 py-4 hover:bg-secondary/50 transition-colors'
               >
-                <div className='px-6 py-1.5 text-center text-sm font-medium text-[#292929]'>
+                <div className='px-6 py-1.5 text-center text-base font-medium text-[#292929]'>
                   {user.id}
                 </div>
                 <div
-                  className='px-6 py-1.5 text-center text-sm font-medium text-[#292929] 
+                  className='px-6 py-1.5 text-center text-base font-medium text-[#292929] 
                 '
                 >
                   {user.name}
                 </div>
-                <div className='px-6 py-1.5 text-center text-sm font-medium text-[#292929]'>
+                <div className='px-6 py-1.5 text-center text-base font-medium text-[#292929]'>
                   {user.email}
                 </div>
                 <div className='px-6 py-1.5 flex items-center justify-center'>
@@ -506,7 +506,7 @@ export default function UserManagement() {
                     variant='ghost'
                     className={`px-6 py-2 rounded-none border-b-2 transition-colors ${
                       activeTab === tab
-                        ? "border-success text-success font-medium"
+                        ? "border-success text-[#15B826] font-medium"
                         : "border-transparent text-[#292929] hover:text-[#292929]"
                     }`}
                     onClick={() => setActiveTab(tab)}

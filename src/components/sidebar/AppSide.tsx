@@ -32,13 +32,13 @@ export default function DashboardSidebar() {
 
   const handleLogout = async () => {
     // await logout();
-    router.push("/signin");
+    router.push("/login");
   };
 
   if (
     pathname === "/signup" ||
-    pathname === "/signin" ||
-    pathname === "/forget-password" ||
+    pathname === "/login" ||
+    pathname === "/forgot-password" ||
     pathname === "/verify-password" ||
     pathname === "/verify-otp" ||
     pathname === "/reset-password"
@@ -178,7 +178,7 @@ function NavItem({ href, icon: Icon, label, active = true }: NavItemProps) {
             "flex items-center gap-3 px-4 !py-5 transition-colors !rounded-full",
             active
               ? "bg-sidebar-link-bg text-sidebar-active-color"
-              : "text-sidebar-color hover:bg-sidebar-link-bg hover:text-[#fff]"
+              : "text-sidebar-color hover:bg-sidebar-link-bg hover:text-[#fff]",
           )}
         >
           <Icon size={18} />

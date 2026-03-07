@@ -30,7 +30,7 @@ export default function RootLayout({
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
-        <SidebarProvider> 
+        <SidebarProvider>
           <div
             className='flex min-h-screen bg-bodyBg w-full'
             style={{
@@ -38,8 +38,8 @@ export default function RootLayout({
             }}
           >
             <AppSidebar />
-            <main className='relative flex-1 min-h-screen w-full bg-body-bg p-6'>
-              <SidebarTrigger className='text-black' />
+            <main className='relative flex-1 min-h-screen w-full bg-body-bg'>
+              {/* <SidebarTrigger className='text-black' /> */}
               <Header />
               {children}
             </main>

@@ -54,7 +54,7 @@ export default function ForgotPasswordPage() {
   };
 
   return (
-    <div className='min-h-screen bg-orange-50 flex items-center justify-center p-4'>
+    <div className='min-h-[90vh] bg-[#F4F5FA] flex items-center justify-center p-4'>
       <div className='w-full max-w-md'>
         <div className='bg-white rounded-2xl shadow-lg p-8 relative'>
           {/* Back Button */}
@@ -66,17 +66,23 @@ export default function ForgotPasswordPage() {
           </button>
 
           {/* Logo */}
-          <div className='flex items-center justify-center text-center'>
-            <Image src='/logo.png' alt='Logo' width={200} height={200} />
+          <div className='flex flex-col items-center justify-center text-center'>
+            <Image
+              src='/auth-logo.png'
+              alt='Logo'
+              width={200}
+              height={200}
+              className='w-32 h-24'
+            />
           </div>
 
           {/* Header */}
-          <div className='text-center mb-8'>
-            <h1 className='text-2xl font-bold text-gray-900 mb-2'>
+          <div className='text-center my-6'>
+            <h1 className='text-xl font-bold text-[#000000] mb-2'>
               Forget Password
             </h1>
             <p className='text-gray-600 text-sm'>
-              Please enter your email address to reset your account password.
+              Enter your email and we’ll send you OTP
             </p>
           </div>
 
@@ -103,7 +109,7 @@ export default function ForgotPasswordPage() {
                     }
                   }}
                   placeholder='Enter your email'
-                  className={`pl-10 h-12 bg-gray-50 border-gray-200 focus:border-orange-400 focus:ring-orange-400 ${
+                  className={`pl-10 h-12 rounded-xl bg-gray-50 border-gray-200 focus:border-orange-400 focus:ring-orange-400 ${
                     errors.email
                       ? "border-red-500 focus:border-red-500 focus:ring-red-500"
                       : ""
@@ -119,25 +125,12 @@ export default function ForgotPasswordPage() {
             {/* Submit Button */}
             <Button
               type='submit'
-              className='w-full h-12 bg-orange-400 hover:bg-orange-500 text-white font-medium rounded-lg transition-colors'
+              className='w-full h-12 bg-[#15B826] hover:bg-[#0fcc22] text-white font-medium rounded-lg transition-colors'
               disabled={isLoading}
             >
               {isLoading ? "Sending..." : "Send OTP"}
             </Button>
           </form>
-
-          {/* Sign In Link */}
-          <div className='text-center mt-6'>
-            <p className='text-gray-600 text-sm'>
-              Already have an account?{" "}
-              <Link
-                href='/auth/signin'
-                className='text-orange-400 hover:text-orange-500 font-medium transition-colors'
-              >
-                Sign in
-              </Link>
-            </p>
-          </div>
         </div>
       </div>
     </div>
