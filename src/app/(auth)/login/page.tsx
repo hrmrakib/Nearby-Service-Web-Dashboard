@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
 
 import type React from "react";
@@ -10,8 +11,14 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Mail, Lock, Eye, EyeOff } from "lucide-react";
 import Link from "next/link";
 import Image from "next/image";
+import { useDispatch } from "react-redux";
+import { setUser, userTrack } from "@/redux/features/auth/authSlice";
+import { saveTokens } from "@/service/authService";
+import { useRouter } from "next/navigation";
+import { toast } from "sonner";
 
 export default function SignInPage() {
+  const router = useRouter();
   const [formData, setFormData] = useState({
     email: "",
     password: "",
@@ -19,6 +26,7 @@ export default function SignInPage() {
   const [showPassword, setShowPassword] = useState(false);
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [isLoading, setIsLoading] = useState(false);
+  const dispatch = useDispatch();
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
@@ -52,11 +60,40 @@ export default function SignInPage() {
 
     setIsLoading(true);
 
+    const email = formData.email;
+    const password = formData.password;
+
     try {
-      await new Promise((resolve) => setTimeout(resolve, 2000));
-      console.log("Sign in data:", formData);
-    } catch (error) {
-      console.error("Sign in error:", error);
+      const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/auth/login`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ email, password }),
+      });
+
+      const data = await res.json();
+
+      if (res?.ok) {
+        dispatch(userTrack());
+        dispatch(
+          setUser({
+            user: data?.data?.user,
+            token: data?.data?.accessToken,
+          }),
+        );
+        await saveTokens(data?.data?.accessToken);
+        localStorage.setItem("accessToken", data?.data?.accessToken);
+        router.push("/");
+      } else {
+        toast.error(data?.message);
+      }
+
+      console.log(await res.json());
+    } catch (err: any) {
+      console.log({ err });
+      // toast.error(err?.data?.message);
+      // setError("Login failed. Please try again.");
     } finally {
       setIsLoading(false);
     }
