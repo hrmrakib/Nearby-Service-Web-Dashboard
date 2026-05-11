@@ -10,7 +10,6 @@ import { Label } from "@/components/ui/label";
 import { Card, CardContent } from "@/components/ui/card";
 import { Mail, Lock, Eye, EyeOff } from "lucide-react";
 import Link from "next/link";
-import Image from "next/image";
 import { useDispatch } from "react-redux";
 import { setUser, userTrack } from "@/redux/features/auth/authSlice";
 import { saveTokens } from "@/service/authService";
@@ -103,17 +102,6 @@ export default function SignInPage() {
     <div className='min-h-[90vh] bg-[#F4F5FA] flex items-center justify-center p-4'>
       <Card className='w-full max-w-md bg-white shadow-lg border-0'>
         <CardContent className='pb-8'>
-          {/* Logo */}
-          <div className='flex flex-col items-center justify-center text-center'>
-            <Image
-              src='/auth-logo.png'
-              alt='Logo'
-              width={200}
-              height={200}
-              className='w-32 h-24'
-            />
-          </div>
-
           {/* Header */}
           <div className='text-center my-5'>
             <h1 className='text-2xl font-bold text-gray-900 mb-2'>

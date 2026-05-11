@@ -3,9 +3,10 @@ import baseAPI from "@/redux/api/api";
 const userAPI = baseAPI.injectEndpoints({
   endpoints: (build) => ({
     getAllUsers: build.query({
-      query: () => ({
-        url: "/users",
+      query: (params) => ({
+        url: `/user/all-user`,
         method: "GET",
+        params,
       }),
     }),
   }),
