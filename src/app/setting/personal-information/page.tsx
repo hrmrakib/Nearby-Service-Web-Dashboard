@@ -19,7 +19,7 @@ export default function PersonalInformationPage() {
   }
 
   return (
-    <div className='flex min-h-screen bg-[#FFFFFF]'>
+    <div className='flex min-h-screen bg-[#FFFFFF] rounded-2xl'>
       <div className='flex-1 w-full'>
         <main className='w-full p-4 md:p-6'>
           <div className=' mx-auto'>
@@ -57,7 +57,7 @@ export default function PersonalInformationPage() {
                     />
                   </div>
                   <span className='text-base text-primary uppercase'>
-                    {profile?.role || "User"}
+                    {profile?.role || "Admin"}
                   </span>
                   <span className='font-medium text-lg text-primary'>
                     {profile?.name}
@@ -84,19 +84,17 @@ export default function PersonalInformationPage() {
 
                   <div className='flex flex-col gap-1'>
                     <div className='text-lg font-medium text-primary'>
-                      Phone Number
-                    </div>
-                    <div className='text-lg text-primary px-2 py-3 rounded-md border border-gray-500'>
-                      {profile?.phone || "N/A"}
-                    </div>
-                  </div>
-
-                  <div className='flex flex-col gap-1'>
-                    <div className='text-lg font-medium text-primary'>
                       Address
                     </div>
                     <div className='text-lg text-primary px-2 py-3 rounded-md border border-gray-500'>
                       {profile?.address || "N/A"}
+                    </div>
+                  </div>
+
+                  <div className='flex flex-col gap-1'>
+                    <div className='text-lg font-medium text-primary'>Bio</div>
+                    <div className='text-lg text-primary px-2 py-3 rounded-md border border-gray-500'>
+                      {profile?.bio || "N/A"}
                     </div>
                   </div>
                 </div>

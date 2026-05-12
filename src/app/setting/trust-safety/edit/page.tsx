@@ -1,27 +1,31 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
+/* eslint-disable @typescript-eslint/ban-ts-comment */
 "use client";
 
 import { useEffect, useRef, useState } from "react";
 import Quill from "quill";
+// @ts-expect-error
 import "quill/dist/quill.snow.css";
 import { Button } from "@/components/ui/button";
-import {
-  useGetTrustAndSafetyQuery,
-  useSetTrustAndSafetyMutation,
-} from "@/redux/feature/settingAPI";
-import Loading from "@/components/loading/Loading";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
+import {
+  useGetTermsAndConditionsQuery,
+  useSetTermsAndConditionsMutation,
+} from "@/redux/features/settings/settingsAPI";
+import Spinner from "@/components/loading/Spinner";
 
-const TrustAndSafetyPage = () => {
+export default function EditTermsAndConditionsPage() {
   const editorRef = useRef<HTMLDivElement>(null);
   const quillRef = useRef<Quill | null>(null);
   const [content, setContent] = useState<string>("");
   const router = useRouter();
 
-  const { data: trustAndSafety, isLoading } = useGetTrustAndSafetyQuery({});
+  const { data: termsData, isLoading } = useGetTermsAndConditionsQuery({});
+  const terms = termsData?.data;
 
-  const [setTrustAndSafety, { isLoading: isSaving }] =
-    useSetTrustAndSafetyMutation();
+  const [setTermsAndConditions, { isLoading: isSaving }] =
+    useSetTermsAndConditionsMutation();
 
   useEffect(() => {
     let initialized = false;
@@ -40,9 +44,9 @@ const TrustAndSafetyPage = () => {
 
         quillRef.current = quill;
 
-        if (trustAndSafety?.description) {
-          quill.root.innerHTML = trustAndSafety.description;
-          setContent(trustAndSafety.description);
+        if (terms[0]?.description) {
+          quill.root.innerHTML = terms[0].description;
+          setContent(terms[0].description);
         }
 
         quill.on("text-change", () => {
@@ -58,21 +62,29 @@ const TrustAndSafetyPage = () => {
     return () => {
       initialized = true;
     };
-  }, [trustAndSafety]);
+  }, [terms]);
 
-  if (isLoading && !trustAndSafety && !quillRef.current) return <Loading />;
+  if (isLoading && !terms && !quillRef.current) return <Spinner />;
 
   const handleSubmit = async () => {
+    if (!content || content === "<p><br></p>") {
+      toast.error("Description cannot be empty");
+      return;
+    }
+
     try {
-      const res = await setTrustAndSafety({ description: content }).unwrap();
-      if (res?.description) {
-        toast.success("Terms and Conditions saved successfully!");
+      const res = await setTermsAndConditions({
+        description: content,
+      }).unwrap();
+
+      if (res) {
+        toast.success("Terms and Conditions updated successfully!");
         router.push("/setting/terms-condition");
-      } else {
-        toast.error("Failed to save.");
       }
-    } catch {
-      toast.error("Save failed.");
+    } catch (err: any) {
+      toast.error(
+        err?.data?.message || "Failed to update Terms and Conditions",
+      );
     }
   };
 
@@ -82,7 +94,7 @@ const TrustAndSafetyPage = () => {
         <div className='h-auto'>
           <div
             ref={editorRef}
-            className='h-[50vh] bg-white text-base'
+            className='h-[50vh] bg-white text-base text-primary'
             id='quill-editor'
           />
         </div>
@@ -99,6 +111,4 @@ const TrustAndSafetyPage = () => {
       </div>
     </div>
   );
-};
-
-export default TrustAndSafetyPage;
+}

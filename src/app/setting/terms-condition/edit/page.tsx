@@ -1,126 +1,28 @@
-// "use client";
-
-// import { useEffect, useRef, useState } from "react";
-// import Quill from "quill";
-// import "quill/dist/quill.snow.css";
-// import { Button } from "@/components/ui/button";
-// import {
-//   useGetTermsAndConditionsQuery,
-//   useSetTermsAndConditionsMutation,
-// } from "@/redux/feature/settingAPI";
-// import Loading from "@/components/loading/Loading";
-
-// const EditAboutUs = () => {
-//   const editorRef = useRef<HTMLDivElement>(null);
-//   const quillRef = useRef<Quill | null>(null);
-//   const [content, setContent] = useState<string>("");
-
-//   const {
-//     data: terms,
-//     isLoading,
-//     isSuccess,
-//   } = useGetTermsAndConditionsQuery({});
-//   const [setTermsAndConditions, { isLoading: isSaving }] =
-//     useSetTermsAndConditionsMutation();
-
-//   // Initialize Quill once
-//   useEffect(() => {
-//     const loadQuill = async () => {
-//       const Quill = (await import("quill")).default;
-
-//       if (
-//         editorRef.current &&
-//         !editorRef.current.classList.contains("ql-container")
-//       ) {
-//         const quill = new Quill(editorRef.current, {
-//           theme: "snow",
-//           placeholder: "Enter your Terms and Conditions...",
-//         });
-
-//         quillRef.current = quill;
-
-//         quill.on("text-change", () => {
-//           const html = quill.root.innerHTML;
-//           setContent(html);
-//         });
-//       }
-//     };
-
-//     if (typeof window !== "undefined") {
-//       loadQuill();
-//     }
-//   }, []);
-
-//   // Paste fetched terms into editor once available
-//   useEffect(() => {
-//     if (terms?.description && quillRef.current) {
-//       quillRef.current.clipboard.dangerouslyPasteHTML(terms.description);
-//       setContent(terms.description); // sync initial state
-//     }
-//   }, [terms]);
-
-//   const handleSubmit = async () => {
-//     try {
-//       const res = await setTermsAndConditions({
-//         description: content,
-//       }).unwrap();
-//       alert("Terms and Conditions saved successfully!");
-//     } catch (err) {
-//       console.error(err);
-//       alert("Failed to save.");
-//     }
-//   };
-
-//   return (
-//     <div className='min-h-[75vh] w-[96%] mx-auto flex flex-col justify-between gap-6'>
-//       <div className='space-y-6'>
-//         <div className='h-auto'>
-//           <div
-//             ref={editorRef}
-//             id='editor'
-//             className='h-[50vh] bg-white text-base'
-//           />
-//         </div>
-//       </div>
-
-//       <div className='flex justify-end'>
-//         <Button
-//           onClick={handleSubmit}
-//           disabled={isSaving}
-//           className='bg-primary hover:bg-teal-700'
-//         >
-//           {isSaving ? "Saving..." : "Save Content"}
-//         </Button>
-//       </div>
-//     </div>
-//   );
-// };
-
-// export default EditAboutUs;
-
-// ---------------------------------------------------------------------------------------------------------------------------
-
+/* eslint-disable @typescript-eslint/no-explicit-any */
+/* eslint-disable @typescript-eslint/ban-ts-comment */
 "use client";
 
 import { useEffect, useRef, useState } from "react";
 import Quill from "quill";
+// @ts-expect-error
 import "quill/dist/quill.snow.css";
 import { Button } from "@/components/ui/button";
+import { useRouter } from "next/navigation";
+import { toast } from "sonner";
 import {
   useGetTermsAndConditionsQuery,
   useSetTermsAndConditionsMutation,
-} from "@/redux/feature/settingAPI";
-import Loading from "@/components/loading/Loading";
-import { useRouter } from "next/navigation";
-import { toast } from "sonner";
+} from "@/redux/features/settings/settingsAPI";
+import Spinner from "@/components/loading/Spinner";
 
-const EditAboutUs = () => {
+export default function EditTermsAndConditionsPage() {
   const editorRef = useRef<HTMLDivElement>(null);
   const quillRef = useRef<Quill | null>(null);
   const [content, setContent] = useState<string>("");
   const router = useRouter();
 
-  const { data: terms, isLoading } = useGetTermsAndConditionsQuery({});
+  const { data: termsData, isLoading } = useGetTermsAndConditionsQuery({});
+  const terms = termsData?.data;
 
   const [setTermsAndConditions, { isLoading: isSaving }] =
     useSetTermsAndConditionsMutation();
@@ -142,9 +44,9 @@ const EditAboutUs = () => {
 
         quillRef.current = quill;
 
-        if (terms?.description) {
-          quill.root.innerHTML = terms.description;
-          setContent(terms.description);
+        if (terms[0]?.description) {
+          quill.root.innerHTML = terms[0].description;
+          setContent(terms[0].description);
         }
 
         quill.on("text-change", () => {
@@ -162,19 +64,27 @@ const EditAboutUs = () => {
     };
   }, [terms]);
 
-  if (isLoading && !terms && !quillRef.current) return <Loading />;
+  if (isLoading && !terms && !quillRef.current) return <Spinner />;
 
   const handleSubmit = async () => {
+    if (!content || content === "<p><br></p>") {
+      toast.error("Description cannot be empty");
+      return;
+    }
+
     try {
-      const res =await setTermsAndConditions({ description: content }).unwrap();
-      if (res?.description) {
-        toast.success("Terms and Conditions saved successfully!");
+      const res = await setTermsAndConditions({
+        description: content,
+      }).unwrap();
+
+      if (res) {
+        toast.success("Terms and Conditions updated successfully!");
         router.push("/setting/terms-condition");
-      } else {
-        toast.error("Failed to save.");
       }
-    } catch {
-      toast.error("Save failed.");
+    } catch (err: any) {
+      toast.error(
+        err?.data?.message || "Failed to update Terms and Conditions",
+      );
     }
   };
 
@@ -184,7 +94,7 @@ const EditAboutUs = () => {
         <div className='h-auto'>
           <div
             ref={editorRef}
-            className='h-[50vh] bg-white text-base'
+            className='h-[50vh] bg-white text-base text-primary'
             id='quill-editor'
           />
         </div>
@@ -201,6 +111,4 @@ const EditAboutUs = () => {
       </div>
     </div>
   );
-};
-
-export default EditAboutUs;
+}

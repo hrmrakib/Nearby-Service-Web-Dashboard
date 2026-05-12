@@ -2,19 +2,17 @@
 
 import Link from "next/link";
 import { ArrowLeft } from "lucide-react";
-// import { useGetTrustAndSafetyQuery } from "@/redux/feature/settingAPI";
-import { useEffect } from "react";
+import { useGetTermsAndConditionsQuery } from "@/redux/features/settings/settingsAPI";
+import Spinner from "@/components/loading/Spinner";
 
-export default function TrustAndSafetyPage() {
-  // const {
-  //   data: trustAndSafety,
-  //   isLoading,
-  //   refetch,
-  // } = useGetTrustAndSafetyQuery({});
+export default function TermsConditionPage() {
+  const { data: termsData, isLoading } = useGetTermsAndConditionsQuery({});
 
-  // useEffect(() => {
-  //   refetch();
-  // }, [trustAndSafety]);
+  const terms = termsData?.data;
+
+  if (isLoading) {
+    return <Spinner />;
+  }
 
   return (
     <div className='flex min-h-screen bg-gray-50'>
@@ -27,33 +25,28 @@ export default function TrustAndSafetyPage() {
                 className='inline-flex items-center text-primary hover:text-teal-700'
               >
                 <ArrowLeft className='mr-2 h-4 w-4' />
-                <span className='text-xl font-semibold'>Trust & Safety</span>
+                <span className='text-xl font-semibold'>Terms & Condition</span>
               </Link>
 
               <Link
-                href='/setting/trust-safety/edit'
+                href='/setting/terms-condition/edit'
                 className='inline-flex items-center text-primary hover:text-teal-700 border border-[#760C2A] rounded-md px-4 py-1.5'
               >
                 <span className='text-xl font-semibold'>Edit</span>
               </Link>
             </div>
 
-            <div className='prose prose-sm max-w-none'>
-              <h2 className='text-xl font-semibold mb-4'>Trust and Safety</h2>
-            </div>
-
-            <div>
-              Lorem ipsum dolor sit amet consectetur adipisicing elit. Alias error eligendi totam quasi fugit, recusandae ipsa necessitatibus molestias similique tempora, laudantium placeat harum quidem, maiores quo cum aliquam dignissimos architecto!
-              {/* {trustAndSafety?.description ? (
+            <div className='prose prose-sm max-w-none text-primary'>
+              {terms[0]?.description && !isLoading ? (
                 <div
                   className='prose prose-sm max-w-none'
-                  dangerouslySetInnerHTML={{
-                    __html: trustAndSafety.description,
-                  }}
+                  dangerouslySetInnerHTML={{ __html: terms[0]?.description }}
                 />
               ) : (
-                <p>Loading content...</p>
-              )} */}
+                !isLoading && <p>No terms and conditions found</p>
+              )}
+
+              {isLoading && <p> Loading...</p>}
             </div>
           </div>
         </main>

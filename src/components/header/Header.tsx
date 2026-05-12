@@ -1,10 +1,11 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Bell } from "lucide-react";
 import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar";
 import { usePathname } from "next/navigation";
 import Link from "next/link";
+import { useGetProfileQuery } from "@/redux/features/settings/settingsAPI";
 
 const Header = () => {
   const [admin, setAdmin] = useState({
@@ -12,6 +13,23 @@ const Header = () => {
     role: "Super admin",
     image: "/admin.jpeg",
   });
+
+  const { data: profileData, isLoading } = useGetProfileQuery({});
+
+  const profile = profileData?.data;
+
+  console.log({ profile });
+
+  useEffect(() => {
+    if (profile) {
+      setAdmin({
+        name: profile.name,
+        role: profile.role,
+        image: profile.image,
+      });
+    }
+  }, [profile]);
+
   const pathname = usePathname();
 
   if (
@@ -25,7 +43,7 @@ const Header = () => {
     return null;
   }
   return (
-    <div className='bg-white border-b border-gray-200 rounded-2xl'>
+    <div className='bg-white border-b border-gray-200 rounded-2xl mb-6'>
       <div className='max-w-8xl mx-auto px-6'>
         <div className='flex items-center justify-between py-6'>
           <div>
@@ -41,9 +59,12 @@ const Header = () => {
                 9+
               </span>
             </Link>
-            <div className='flex items-center gap-3'>
+            <Link
+              href='/setting/personal-information'
+              className='flex items-center gap-3'
+            >
               <Avatar className='h-10 w-10'>
-                <AvatarImage src='/admin.jpeg' alt='Daissy' />
+                <AvatarImage src={admin?.image} alt='Daissy' />
                 <AvatarFallback>D</AvatarFallback>
               </Avatar>
               <div className='hidden sm:block'>
@@ -52,7 +73,7 @@ const Header = () => {
                 </p>
                 <p className='text-sm text-[#606060]'>{admin?.role}</p>
               </div>
-            </div>
+            </Link>
           </div>
         </div>
       </div>

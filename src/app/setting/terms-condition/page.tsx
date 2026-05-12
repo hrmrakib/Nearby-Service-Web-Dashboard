@@ -2,10 +2,17 @@
 
 import Link from "next/link";
 import { ArrowLeft } from "lucide-react";
-// import { useGetTermsAndConditionsQuery } from "@/redux/feature/settingAPI";
+import { useGetTermsAndConditionsQuery } from "@/redux/features/settings/settingsAPI";
+import Spinner from "@/components/loading/Spinner";
 
 export default function TermsConditionPage() {
-  // const { data: terms, isLoading } = useGetTermsAndConditionsQuery({});
+  const { data: termsData, isLoading } = useGetTermsAndConditionsQuery({});
+
+  const terms = termsData?.data;
+
+  if (isLoading) {
+    return <Spinner />;
+  }
 
   return (
     <div className='flex min-h-screen bg-gray-50'>
@@ -29,19 +36,17 @@ export default function TermsConditionPage() {
               </Link>
             </div>
 
-            <div>
-              Lorem ipsum dolor sit, amet consectetur adipisicing elit. Libero
-              quis veritatis sint, ab saepe illo omnis sed quisquam ad neque
-              reiciendis obcaecati quia, sapiente necessitatibus aliquam.
-              Recusandae obcaecati qui culpa!
-              {/* {terms?.description ? (
+            <div className='prose prose-sm max-w-none text-primary'>
+              {terms[0]?.description && !isLoading ? (
                 <div
                   className='prose prose-sm max-w-none'
-                  dangerouslySetInnerHTML={{ __html: terms.description }}
+                  dangerouslySetInnerHTML={{ __html: terms[0]?.description }}
                 />
               ) : (
-                <p>Loading content...</p>
-              )} */}
+                !isLoading && <p>No terms and conditions found</p>
+              )}
+
+              {isLoading && <p> Loading...</p>}
             </div>
           </div>
         </main>

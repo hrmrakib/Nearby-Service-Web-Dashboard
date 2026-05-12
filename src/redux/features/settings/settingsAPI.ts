@@ -7,6 +7,7 @@ const settingsAPI = baseAPI.injectEndpoints({
         url: `/user/profile`,
         method: "GET",
       }),
+      providesTags: ["Profile"],
     }),
 
     updateProfile: builder.mutation({
@@ -15,9 +16,56 @@ const settingsAPI = baseAPI.injectEndpoints({
         method: "PATCH",
         body: data,
       }),
+      invalidatesTags: ["Profile"],
+    }),
+
+    updatePassword: builder.mutation({
+      query: (data) => ({
+        url: `/auth/change-password`,
+        method: "POST",
+        body: data,
+      }),
+    }),
+
+    getTermsAndConditions: builder.query({
+      query: () => ({
+        url: `/terms`,
+        method: "GET",
+      }),
+      providesTags: ["TermsAndConditions"],
+    }),
+
+    setTermsAndConditions: builder.mutation({
+      query: (data) => ({
+        url: `/terms`,
+        method: "PATCH",
+        body: data,
+      }),
+      invalidatesTags: ["TermsAndConditions"],
+    }),
+
+    getTrustAndSafety: builder.query({
+      query: () => ({
+        url: `/trust-and-safety`,
+        method: "GET",
+      }),
+    }),
+
+    setTrustAndSafety: builder.mutation({
+      query: (data) => ({
+        url: `/trust-and-safety`,
+        method: "PATCH",
+        body: data,
+      }),
     }),
   }),
 });
 
-export const { useGetProfileQuery, useUpdateProfileMutation } = settingsAPI;
+export const {
+  useGetProfileQuery,
+  useUpdateProfileMutation,
+  useUpdatePasswordMutation,
+  useGetTermsAndConditionsQuery,
+  useSetTermsAndConditionsMutation,
+} = settingsAPI;
 export default settingsAPI;

@@ -1,7 +1,7 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
 
 import type React from "react";
-
 import { useState } from "react";
 import Link from "next/link";
 import { ArrowLeft, AlertCircle, Eye, EyeOff } from "lucide-react";
@@ -9,12 +9,13 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Alert, AlertDescription } from "@/components/ui/alert";
-// import { useUpdatePasswordMutation } from "@/redux/feature/settingAPI";
 import { toast } from "sonner";
 import { useRouter } from "next/navigation";
+import { useUpdatePasswordMutation } from "@/redux/features/settings/settingsAPI";
 
 export default function ChangePasswordPage() {
   const [formData, setFormData] = useState({
+    currentPassword: "", // Added field
     newPassword: "",
     confirmPassword: "",
   });
@@ -25,7 +26,7 @@ export default function ChangePasswordPage() {
   const [error, setError] = useState("");
   const router = useRouter();
 
-  // const [updatePassword] = useUpdatePasswordMutation();
+  const [updatePassword, { isLoading }] = useUpdatePasswordMutation();
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
@@ -36,8 +37,12 @@ export default function ChangePasswordPage() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    // Basic validation
-    if (!formData.newPassword || !formData.confirmPassword) {
+    // Validation logic
+    if (
+      !formData.currentPassword ||
+      !formData.newPassword ||
+      !formData.confirmPassword
+    ) {
       setError("All fields are required");
       return;
     }
@@ -48,27 +53,34 @@ export default function ChangePasswordPage() {
     }
 
     if (formData.newPassword.length < 6) {
-      setError("Password must be at least 8 characters long");
+      setError("Password must be at least 6 characters long");
       return;
     }
 
-    // const res = await updatePassword({
-    //   new_password: formData.newPassword,
-    //   confirm_password: formData.confirmPassword,
-    // });
+    try {
+      // Matching your required JSON structure
+      const payload = {
+        currentPassword: formData.currentPassword,
+        newPassword: formData.newPassword,
+        confirmPassword: formData.confirmPassword,
+      };
 
-    // if (res.error) {
-    //   toast.error("Something went wrong");
-    // } else if (res.data) {
-    //   toast.success("Password updated successfully!");
-    // }
+      const res = await updatePassword(payload).unwrap();
 
-    router.push("/setting");
-
-    setFormData({
-      newPassword: "",
-      confirmPassword: "",
-    });
+      if (res.success) {
+        toast.success(res.message || "Password updated successfully!");
+        setFormData({
+          currentPassword: "",
+          newPassword: "",
+          confirmPassword: "",
+        });
+        router.push("/setting");
+      }
+    } catch (err: any) {
+      const errorMessage = err?.data?.message || "Failed to update password";
+      setError(errorMessage);
+      toast.error(errorMessage);
+    }
   };
 
   return (
@@ -82,7 +94,7 @@ export default function ChangePasswordPage() {
                 className='inline-flex items-center text-primary hover:text-teal-700'
               >
                 <ArrowLeft className='mr-2 h-6 w-6' />
-                <span className='text-2xl text-[#760C2A] font-semibold'>
+                <span className='text-2xl text-primary font-semibold'>
                   Change Password
                 </span>
               </Link>
@@ -90,16 +102,51 @@ export default function ChangePasswordPage() {
 
             <form onSubmit={handleSubmit} className='space-y-4'>
               {error && (
-                <Alert variant='destructive'>
-                  <AlertCircle className='h-6 w-6' />
+                <Alert variant='destructive' className='bg-red-50'>
+                  <AlertCircle className='h-4 w-4' />
                   <AlertDescription>{error}</AlertDescription>
                 </Alert>
               )}
 
+              {/* Current Password Field */}
+              <div className='space-y-2'>
+                <Label
+                  htmlFor='currentPassword'
+                  style={{ color: "#17CA2A" }}
+                  className='text-lg font-medium text-primary!'
+                >
+                  Current Password
+                </Label>
+                <div className='relative'>
+                  <Input
+                    id='currentPassword'
+                    name='currentPassword'
+                    type={showCurrentPassword ? "text" : "password"}
+                    value={formData.currentPassword}
+                    onChange={handleChange}
+                    placeholder='Enter current password'
+                    className='text-lg font-medium text-primary!'
+                  />
+                  <button
+                    type='button'
+                    className='absolute right-3 top-1/2 -translate-y-1/2 text-gray-500'
+                    onClick={() => setShowCurrentPassword(!showCurrentPassword)}
+                  >
+                    {showCurrentPassword ? (
+                      <EyeOff size={18} />
+                    ) : (
+                      <Eye size={18} />
+                    )}
+                  </button>
+                </div>
+              </div>
+
+              {/* New Password Field */}
               <div className='space-y-2'>
                 <Label
                   htmlFor='newPassword'
-                  className='text-lg font-medium text-primary'
+                  style={{ color: "#17CA2A" }}
+                  className='text-lg font-medium text-primary!'
                 >
                   New Password
                 </Label>
@@ -110,7 +157,8 @@ export default function ChangePasswordPage() {
                     type={showNewPassword ? "text" : "password"}
                     value={formData.newPassword}
                     onChange={handleChange}
-                    className='text-lg font-medium text-primary'
+                    placeholder='Enter new password'
+                    className='text-lg font-medium text-primary!'
                   />
                   <button
                     type='button'
@@ -122,10 +170,12 @@ export default function ChangePasswordPage() {
                 </div>
               </div>
 
+              {/* Confirm Password Field */}
               <div className='space-y-2'>
                 <Label
                   htmlFor='confirmPassword'
-                  className='text-lg font-medium text-primary'
+                  style={{ color: "#17CA2A" }}
+                  className='text-lg font-medium text-primary!'
                 >
                   Confirm New Password
                 </Label>
@@ -136,11 +186,12 @@ export default function ChangePasswordPage() {
                     type={showConfirmPassword ? "text" : "password"}
                     value={formData.confirmPassword}
                     onChange={handleChange}
-                    className='text-lg font-medium text-primary'
+                    placeholder='Re-type new password'
+                    className='text-lg font-medium text-primary!'
                   />
                   <button
                     type='button'
-                    className='absolute right-3 top-1/2 -translate-y-1/2 text-lg font-medium text-primary'
+                    className='absolute right-3 top-1/2 -translate-y-1/2 text-gray-500'
                     onClick={() => setShowConfirmPassword(!showConfirmPassword)}
                   >
                     {showConfirmPassword ? (
@@ -155,9 +206,10 @@ export default function ChangePasswordPage() {
               <div className='pt-2'>
                 <Button
                   type='submit'
-                  className='bg-primary hover:bg-teal-700 text-lg font-medium text-white'
+                  disabled={isLoading}
+                  className='bg-primary hover:bg-[#5a0921] text-lg font-medium text-white px-8'
                 >
-                  Update Password
+                  {isLoading ? "Updating..." : "Update Password"}
                 </Button>
               </div>
             </form>
