@@ -10,22 +10,22 @@ import { Button } from "@/components/ui/button";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
 import {
-  useGetTermsAndConditionsQuery,
-  useSetTermsAndConditionsMutation,
+  useGetAboutQuery,
+  useSetAboutMutation,
 } from "@/redux/features/settings/settingsAPI";
 import Spinner from "@/components/loading/Spinner";
 
-export default function EditTermsAndConditionsPage() {
+export default function EditAbout() {
   const editorRef = useRef<HTMLDivElement>(null);
   const quillRef = useRef<Quill | null>(null);
   const [content, setContent] = useState<string>("");
   const router = useRouter();
 
-  const { data: termsData, isLoading } = useGetTermsAndConditionsQuery({});
+  const { data: termsData, isLoading } = useGetAboutQuery({});
   const terms = termsData?.data;
 
-  const [setTermsAndConditions, { isLoading: isSaving }] =
-    useSetTermsAndConditionsMutation();
+  const [setPrivacyPolicyMutation, { isLoading: isSaving }] =
+    useSetAboutMutation();
 
   useEffect(() => {
     let initialized = false;
@@ -39,7 +39,7 @@ export default function EditTermsAndConditionsPage() {
       if (editorRef.current && !editorRef.current.querySelector(".ql-editor")) {
         const quill = new Quill(editorRef.current, {
           theme: "snow",
-          placeholder: "Enter your Terms and Conditions...",
+          placeholder: "Enter your about...",
         });
 
         quillRef.current = quill;
@@ -73,13 +73,13 @@ export default function EditTermsAndConditionsPage() {
     }
 
     try {
-      const res = await setTermsAndConditions({
+      const res = await setPrivacyPolicyMutation({
         description: content,
       }).unwrap();
 
       if (res) {
-        toast.success("Terms and Conditions updated successfully!");
-        router.push("/setting/terms-condition");
+        toast.success("About updated successfully!");
+        router.push("/setting/about");
       }
     } catch (err: any) {
       toast.error(

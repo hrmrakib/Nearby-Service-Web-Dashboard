@@ -2,11 +2,11 @@
 
 import Link from "next/link";
 import { ArrowLeft } from "lucide-react";
-import { useGetTermsAndConditionsQuery } from "@/redux/features/settings/settingsAPI";
+import { useGetAboutQuery } from "@/redux/features/settings/settingsAPI";
 import Spinner from "@/components/loading/Spinner";
 
-export default function TermsConditionPage() {
-  const { data: termsData, isLoading } = useGetTermsAndConditionsQuery({});
+export default function About() {
+  const { data: termsData, isLoading } = useGetAboutQuery({});
 
   const terms = termsData?.data;
 
@@ -25,11 +25,11 @@ export default function TermsConditionPage() {
                 className='inline-flex items-center text-primary hover:text-teal-700'
               >
                 <ArrowLeft className='mr-2 h-4 w-4' />
-                <span className='text-xl font-semibold'>Terms & Condition</span>
+                <span className='text-xl font-semibold'>About Us</span>
               </Link>
 
               <Link
-                href='/setting/terms-condition/edit'
+                href='/setting/about/edit'
                 className='inline-flex items-center text-primary hover:text-teal-700 border border-[#760C2A] rounded-md px-4 py-1.5'
               >
                 <span className='text-xl font-semibold'>Edit</span>

@@ -32,7 +32,7 @@ const settingsAPI = baseAPI.injectEndpoints({
         url: `/terms`,
         method: "GET",
       }),
-      providesTags: ["TermsAndConditions"],
+      providesTags: ["Settings"],
     }),
 
     setTermsAndConditions: builder.mutation({
@@ -41,22 +41,58 @@ const settingsAPI = baseAPI.injectEndpoints({
         method: "PATCH",
         body: data,
       }),
-      invalidatesTags: ["TermsAndConditions"],
+      invalidatesTags: ["Settings"],
     }),
 
-    getTrustAndSafety: builder.query({
+    getPrivacyPolicy: builder.query({
       query: () => ({
-        url: `/trust-and-safety`,
+        url: `/privacy`,
         method: "GET",
       }),
+      providesTags: ["Settings"],
     }),
 
-    setTrustAndSafety: builder.mutation({
+    setPrivacyPolicy: builder.mutation({
       query: (data) => ({
-        url: `/trust-and-safety`,
+        url: `/privacy`,
         method: "PATCH",
         body: data,
       }),
+      invalidatesTags: ["Settings"],
+    }),
+
+    getAbout: builder.query({
+      query: () => ({
+        url: `/about`,
+        method: "GET",
+      }),
+      providesTags: ["Settings"],
+    }),
+
+    setAbout: builder.mutation({
+      query: (data) => ({
+        url: `/about`,
+        method: "PATCH",
+        body: data,
+      }),
+      invalidatesTags: ["Settings"],
+    }),
+
+    getCommunityGuidelines: builder.query({
+      query: () => ({
+        url: `/guidelines`,
+        method: "GET",
+      }),
+      providesTags: ["Settings"],
+    }),
+
+    setCommunityGuidelines: builder.mutation({
+      query: (data) => ({
+        url: `/guidelines`,
+        method: "POST",
+        body: data,
+      }),
+      invalidatesTags: ["Settings"],
     }),
   }),
 });
@@ -67,5 +103,11 @@ export const {
   useUpdatePasswordMutation,
   useGetTermsAndConditionsQuery,
   useSetTermsAndConditionsMutation,
+  useGetPrivacyPolicyQuery,
+  useSetPrivacyPolicyMutation,
+  useGetAboutQuery,
+  useSetAboutMutation,
+  useGetCommunityGuidelinesQuery,
+  useSetCommunityGuidelinesMutation,
 } = settingsAPI;
 export default settingsAPI;

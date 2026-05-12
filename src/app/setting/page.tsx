@@ -9,7 +9,8 @@ export default function SettingsPage() {
     { title: "Change Password", href: "/setting/change-password" },
     { title: "Terms & Condition", href: "/setting/terms-condition" },
     { title: "Privacy Policy", href: "/setting/privacy-policy" },
-    { title: "Trust & Safety", href: "/setting/trust-safety" },
+    { title: "About Us", href: "/setting/about" },
+    { title: "Community Guidelines", href: "/setting/community-guidelines" },
   ];
 
   return (

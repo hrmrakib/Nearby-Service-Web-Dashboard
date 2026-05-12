@@ -3,8 +3,6 @@
 
 import { Card, CardContent } from "@/components/ui/card";
 import {
-  BarChart3,
-  Calendar,
   CalendarDays,
   ClipboardList,
   Handshake,

@@ -2,11 +2,11 @@
 
 import Link from "next/link";
 import { ArrowLeft } from "lucide-react";
-import { useGetPrivacyPolicyQuery } from "@/redux/features/settings/settingsAPI";
+import { useGetCommunityGuidelinesQuery } from "@/redux/features/settings/settingsAPI";
 import Spinner from "@/components/loading/Spinner";
 
-export default function PrivacyPolicyPage() {
-  const { data: termsData, isLoading } = useGetPrivacyPolicyQuery({});
+export default function CommunityGuidelines() {
+  const { data: termsData, isLoading } = useGetCommunityGuidelinesQuery({});
 
   const terms = termsData?.data;
 
@@ -25,11 +25,13 @@ export default function PrivacyPolicyPage() {
                 className='inline-flex items-center text-primary hover:text-teal-700'
               >
                 <ArrowLeft className='mr-2 h-4 w-4' />
-                <span className='text-xl font-semibold'>Privacy Policy</span>
+                <span className='text-xl font-semibold'>
+                  Community Guidelines
+                </span>
               </Link>
 
               <Link
-                href='/setting/privacy-policy/edit'
+                href='/setting/community-guidelines/edit'
                 className='inline-flex items-center text-primary hover:text-teal-700 border border-[#760C2A] rounded-md px-4 py-1.5'
               >
                 <span className='text-xl font-semibold'>Edit</span>

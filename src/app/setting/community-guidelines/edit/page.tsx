@@ -10,22 +10,22 @@ import { Button } from "@/components/ui/button";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
 import {
-  useGetPrivacyPolicyQuery,
-  useSetPrivacyPolicyMutation,
+  useGetCommunityGuidelinesQuery,
+  useSetCommunityGuidelinesMutation,
 } from "@/redux/features/settings/settingsAPI";
 import Spinner from "@/components/loading/Spinner";
 
-export default function EditPrivacyPolicyPage() {
+export default function EditCommunityGuidelines() {
   const editorRef = useRef<HTMLDivElement>(null);
   const quillRef = useRef<Quill | null>(null);
   const [content, setContent] = useState<string>("");
   const router = useRouter();
 
-  const { data: termsData, isLoading } = useGetPrivacyPolicyQuery({});
+  const { data: termsData, isLoading } = useGetCommunityGuidelinesQuery({});
   const terms = termsData?.data;
 
   const [setPrivacyPolicyMutation, { isLoading: isSaving }] =
-    useSetPrivacyPolicyMutation();
+    useSetCommunityGuidelinesMutation();
 
   useEffect(() => {
     let initialized = false;
@@ -39,7 +39,7 @@ export default function EditPrivacyPolicyPage() {
       if (editorRef.current && !editorRef.current.querySelector(".ql-editor")) {
         const quill = new Quill(editorRef.current, {
           theme: "snow",
-          placeholder: "Enter your Terms and Conditions...",
+          placeholder: "Enter your community guidelines...",
         });
 
         quillRef.current = quill;
@@ -78,12 +78,12 @@ export default function EditPrivacyPolicyPage() {
       }).unwrap();
 
       if (res) {
-        toast.success("Privacy Policy updated successfully!");
-        router.push("/setting/privacy-policy");
+        toast.success("Community Guidelines updated successfully!");
+        router.push("/setting/community-guidelines");
       }
     } catch (err: any) {
       toast.error(
-        err?.data?.message || "Failed to update Terms and Conditions",
+        err?.data?.message || "Failed to update community guidelines",
       );
     }
   };
