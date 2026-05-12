@@ -2,9 +2,25 @@ import { baseAPI } from "@/redux/api/api";
 
 const serviceActivitiesAPI = baseAPI.injectEndpoints({
   endpoints: (builder) => ({
-    getPublishedServiceActivities: builder.query({
+    getAllPublishedPost: builder.query({
       query: (params) => ({
-        url: `/service-activity`,
+        url: `/post/published`,
+        method: "GET",
+        params,
+      }),
+    }),
+
+    getAllSuspeciousPost: builder.query({
+      query: (params) => ({
+        url: `/post/suspicious`,
+        method: "GET",
+        params,
+      }),
+    }),
+
+    getAllBlockPost: builder.query({
+      query: (params) => ({
+        url: `/post/blocked`,
         method: "GET",
         params,
       }),
@@ -12,5 +28,9 @@ const serviceActivitiesAPI = baseAPI.injectEndpoints({
   }),
 });
 
-export const { useGetPublishedServiceActivitiesQuery } = serviceActivitiesAPI;
+export const {
+  useGetAllPublishedPostQuery,
+  useGetAllSuspeciousPostQuery,
+  useGetAllBlockPostQuery,
+} = serviceActivitiesAPI;
 export default serviceActivitiesAPI;
