@@ -8,8 +8,12 @@ import { Input } from "@/components/ui/input";
 import { Dialog, DialogContent, DialogHeader } from "@/components/ui/dialog";
 import { Textarea } from "@/components/ui/textarea";
 import Image from "next/image";
-import { useGetReportsQuery } from "@/redux/features/report/reportAPI";
+import {
+  useGetReportsQuery,
+  useRemoveReportedPostMutation,
+} from "@/redux/features/report/reportAPI";
 import GlobalPagination from "@/components/pagination/GlobalPagination";
+import { toast } from "sonner";
 
 // Updated interface to better reflect the UI needs while mapping from API
 interface Report {
@@ -37,6 +41,8 @@ export default function ReportDashboard() {
     page,
     limit: 5,
   });
+  const [removeReportedPostMutation, { isLoading: isRemovingReportPost }] =
+    useRemoveReportedPostMutation();
   const rawReports = apiResponse?.data || [];
   const totalPages = apiResponse?.meta?.totalPage || 1;
 
@@ -84,24 +90,48 @@ export default function ReportDashboard() {
 
   // Step 1: Open warning modal instead of direct delete
   const handleInitiateRemove = () => {
+    if (!selectedReport?.postId) {
+      toast.error("Reported post not found");
+      return;
+    }
     setShowWarning(true);
   };
 
   // Step 2: Final delete logic
-  const handleFinalDelete = () => {
-    console.log("Finalizing deletion for post:", selectedReport?.postId);
-    // Add your delete API call here
-    setShowWarning(false);
-    setSelectedReport(null);
+  const handleFinalDelete = async () => {
+    if (!selectedReport) return;
+
+    try {
+      const res = await removeReportedPostMutation(
+        selectedReport?.postId,
+      ).unwrap();
+      console.log(res);
+    } catch (error) {
+      console.error("Error deleting post:", error);
+    } finally {
+      setShowWarning(false);
+      setSelectedReport(null);
+    }
   };
 
   const handleViewPost = () => {
-    console.log("Viewing post details for:", selectedReport?.postId);
-    setSelectedReport(null);
+    if (!selectedReport?.postId) {
+      toast.error("Reported post not found");
+      return;
+    }
+    if (selectedReport?.postId) {
+      window.open(
+        `${process.env.NEXT_PUBLIC_FRONTEND_URL}/event/${selectedReport?.postId}`,
+        "_blank",
+      );
+      setSelectedReport(null);
+    }
   };
 
   if (isLoading)
     return <div className='p-10 text-center'>Loading reports...</div>;
+
+  console.log({ selectedReport });
 
   return (
     <div className='min-h-screen bg-background mt-8 rounded-2xl'>
@@ -267,7 +297,7 @@ export default function ReportDashboard() {
               <div className='flex gap-4 pt-4'>
                 <Button
                   variant='outline'
-                  className='flex-1 border-[#EF4444] text-[#EF4444] hover:bg-[#EF4444]! hover:text-white rounded-full'
+                  className='flex-1 border-[#EF4444]! text-[#EF4444] hover:bg-[#EF4444]! hover:text-white rounded-full'
                   onClick={handleInitiateRemove}
                 >
                   Remove Post
@@ -308,7 +338,7 @@ export default function ReportDashboard() {
             <div className='flex w-full gap-3 mt-6'>
               <Button
                 variant='outline'
-                className='flex-1 rounded-full border-gray-200 text-gray-600 hover:bg-gray-50'
+                className='flex-1 rounded-full border-gray-200! text-gray-600 hover:bg-gray-50'
                 onClick={() => setShowWarning(false)}
               >
                 Cancel

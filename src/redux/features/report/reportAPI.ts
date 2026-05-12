@@ -9,8 +9,15 @@ const reportAPI = baseAPI.injectEndpoints({
         params,
       }),
     }),
+
+    removeReportedPost: builder.mutation({
+      query: (id) => ({
+        url: `post/admin/${id}`,
+        method: "DELETE",
+      }),
+    }),
   }),
 });
 
-export const { useGetReportsQuery } = reportAPI;
+export const { useGetReportsQuery, useRemoveReportedPostMutation } = reportAPI;
 export default reportAPI;
