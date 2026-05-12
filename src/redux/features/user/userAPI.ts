@@ -9,8 +9,16 @@ const userAPI = baseAPI.injectEndpoints({
         params,
       }),
     }),
+
+    getUserById: build.query({
+      query: ({ id, params }) => ({
+        url: `/user/profile/${id}`,
+        method: "GET",
+        params,
+      }),
+    }),
   }),
 });
 
-export const { useGetAllUsersQuery } = userAPI;
+export const { useGetAllUsersQuery, useGetUserByIdQuery } = userAPI;
 export default userAPI;

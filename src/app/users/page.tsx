@@ -2,13 +2,16 @@
 "use client";
 
 import { useState } from "react";
-import { Search, MapPin, Calendar, Info } from "lucide-react";
+import { Search, MapPin, Calendar, Info, Eye } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Dialog, DialogContent } from "@/components/ui/dialog";
 import Image from "next/image";
-import { useGetAllUsersQuery } from "@/redux/features/user/userAPI";
+import {
+  useGetAllUsersQuery,
+  useGetUserByIdQuery,
+} from "@/redux/features/user/userAPI";
 import GlobalPagination from "@/components/pagination/GlobalPagination";
 import { useDebounce } from "@/hooks/useDebounce";
 
@@ -56,8 +59,23 @@ export default function UserManagement() {
     limit: 5,
     search: debouncedSearchTerm,
   });
+  const { data: userDetailData } = useGetUserByIdQuery(
+    {
+      id: selectedUser?.id || "",
+      params: {
+        page: 1,
+        limit: 5,
+      },
+    },
+    { skip: !selectedUser?.id },
+  );
+
   const usersFromApi = userData?.data || [];
   const totalPages = userData?.meta?.totalPage || 1;
+
+  const userDetail = userDetailData?.data || [];
+
+  console.log({ selectedUser, userDetail });
 
   const handlePageChange = (page: number) => {
     setPage(page);
@@ -93,21 +111,22 @@ export default function UserManagement() {
   };
 
   const getActiveContent = () => {
-    if (!selectedUser) return [];
     switch (activeTab) {
       case "Post":
-        return selectedUser.posts;
+        return userDetail.posts?.data || [];
       case "Attending":
-        return selectedUser.attending;
+        return userDetail.attendingEvents?.data || [];
       case "Saved":
-        return selectedUser.saved;
+        return userDetail.savedPosts?.data?.filter((s: any) => s.postId) || [];
       default:
         return [];
     }
   };
 
   if (isLoading)
-    return <div className='p-10 text-center'>Loading users...</div>;
+    return (
+      <div className='p-10 text-center text-primary'>Loading users...</div>
+    );
 
   return (
     <div className='min-h-screen bg-background !rounded-2xl mt-10'>
@@ -265,37 +284,50 @@ export default function UserManagement() {
               {/* Content Grid */}
               <div className='grid grid-cols-1 md:grid-cols-3 gap-6'>
                 {getActiveContent().length > 0 ? (
-                  getActiveContent().map((item) => (
+                  getActiveContent().map((item: any) => (
                     <div
-                      key={item.id}
+                      key={item._id}
                       className='bg-secondary/30 rounded-xl overflow-hidden hover:shadow-lg transition-shadow'
                     >
-                      <div className='relative'>
-                        <Image
-                          width={500}
-                          height={500}
-                          src={item.image || "/placeholder.svg"}
-                          alt={item.title}
-                          className='w-full h-48 object-cover'
-                        />
-                      </div>
+                      <Image
+                        src={
+                          activeTab === "Saved"
+                            ? "/placeholder.svg"
+                            : item.image || "/placeholder.svg"
+                        }
+                        width={400}
+                        height={400}
+                        alt={activeTab === "Saved" ? "Saved post" : item.title}
+                        className='w-full h-48 object-cover'
+                      />
                       <div className='p-4 space-y-3'>
-                        <h3 className='font-semibold text-[#292929]'>
-                          {item.title}
-                        </h3>
-                        <div className='flex items-center gap-4 text-sm text-[#292929]'>
-                          <div className='flex items-center gap-1'>
-                            <MapPin className='h-3 w-3' />
-                            <span>{item.distance}</span>
-                          </div>
-                          <div className='flex items-center gap-1'>
-                            <span>⭐</span>
-                            <span>{item.rating}</span>
-                          </div>
-                        </div>
-                        <p className='text-sm text-[#292929] line-clamp-3'>
-                          {item.description}
-                        </p>
+                        {activeTab !== "Saved" && (
+                          <>
+                            <h3 className='font-semibold text-[#292929]'>
+                              {item.title}
+                            </h3>
+                            <div className='flex items-center gap-4 text-sm text-[#292929]'>
+                              <div className='flex items-center gap-1'>
+                                <MapPin className='h-3 w-3' />
+                                <span className='truncate'>{item.address}</span>
+                              </div>
+                              <div className='flex items-center gap-1'>
+                                <span>
+                                  <Eye className='h-3 w-3' />
+                                </span>
+                                <span>{item.views}</span>
+                              </div>
+                            </div>
+                            <p className='text-sm text-[#292929] line-clamp-3'>
+                              {item.description}
+                            </p>
+                          </>
+                        )}
+                        {activeTab === "Saved" && (
+                          <p className='text-sm text-[#292929]'>
+                            Post ID: {item.postId?._id}
+                          </p>
+                        )}
                       </div>
                     </div>
                   ))

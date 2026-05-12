@@ -129,7 +129,9 @@ export default function ReportDashboard() {
   };
 
   if (isLoading)
-    return <div className='p-10 text-center'>Loading reports...</div>;
+    return (
+      <div className='p-10 text-center text-primary'>Loading reports...</div>
+    );
 
   console.log({ selectedReport });
 
