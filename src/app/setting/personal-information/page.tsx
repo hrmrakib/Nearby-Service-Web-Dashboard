@@ -3,8 +3,21 @@
 import Link from "next/link";
 import Image from "next/image";
 import { ArrowLeft, Edit } from "lucide-react";
+import { useGetProfileQuery } from "@/redux/features/settings/settingsAPI";
 
 export default function PersonalInformationPage() {
+  const { data: profileData, isLoading } = useGetProfileQuery({});
+
+  const profile = profileData?.data;
+
+  if (isLoading) {
+    return (
+      <div className='flex min-h-screen items-center justify-center bg-[#FFFFFF]'>
+        <p className='text-lg text-primary animate-pulse'>Loading Profile...</p>
+      </div>
+    );
+  }
+
   return (
     <div className='flex min-h-screen bg-[#FFFFFF]'>
       <div className='flex-1 w-full'>
@@ -24,10 +37,10 @@ export default function PersonalInformationPage() {
                 href='/setting/personal-information/edit'
                 className='bg-primary text-white rounded-md px-4 py-2'
               >
-                <button className='flex items-center gap-2'>
+                <div className='flex items-center gap-2'>
                   <Edit className='h-4 w-4' />
                   <span>Edit</span>
-                </button>
+                </div>
               </Link>
             </div>
 
@@ -37,15 +50,17 @@ export default function PersonalInformationPage() {
                 <div className='w-full md:w-64 flex flex-col items-center border border-gray-600 rounded-md px-6 py-10'>
                   <div className='w-32 h-32 rounded-full overflow-hidden relative mb-3'>
                     <Image
-                      src={"/admin.jpg"}
+                      src={profile?.image || "/admin.jpg"} // Falls back to local image if API image is null
                       alt='Profile'
                       fill
                       className='object-cover'
                     />
                   </div>
-                  <span className='text-base text-primary'>Profile</span>
+                  <span className='text-base text-primary uppercase'>
+                    {profile?.role || "User"}
+                  </span>
                   <span className='font-medium text-lg text-primary'>
-                    Admin
+                    {profile?.name}
                   </span>
                 </div>
 
@@ -54,7 +69,7 @@ export default function PersonalInformationPage() {
                   <div className='flex flex-col gap-1'>
                     <div className='text-lg font-medium text-primary'>Name</div>
                     <div className='text-lg text-primary px-2 py-3 rounded-md border border-gray-500'>
-                      Fazu Pagla
+                      {profile?.name || "N/A"}
                     </div>
                   </div>
 
@@ -63,7 +78,7 @@ export default function PersonalInformationPage() {
                       Email
                     </div>
                     <div className='text-lg text-primary px-2 py-3 rounded-md border border-gray-500'>
-                      fazu@gmail.gom
+                      {profile?.email || "N/A"}
                     </div>
                   </div>
 
@@ -72,7 +87,16 @@ export default function PersonalInformationPage() {
                       Phone Number
                     </div>
                     <div className='text-lg text-primary px-2 py-3 rounded-md border border-gray-500'>
-                      9999999999
+                      {profile?.phone || "N/A"}
+                    </div>
+                  </div>
+
+                  <div className='flex flex-col gap-1'>
+                    <div className='text-lg font-medium text-primary'>
+                      Address
+                    </div>
+                    <div className='text-lg text-primary px-2 py-3 rounded-md border border-gray-500'>
+                      {profile?.address || "N/A"}
                     </div>
                   </div>
                 </div>
