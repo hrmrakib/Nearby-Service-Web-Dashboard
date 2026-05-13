@@ -47,7 +47,6 @@ export default function RecentUser() {
   const [searchTerm, setSearchTerm] = useState("");
   const [overviewPage, setOverviewPage] = useState(1);
 
-  // Separate page per tab so switching tabs doesn't reset other tabs' pagination
   const [tabPages, setTabPages] = useState<TabPages>({
     Post: 1,
     Attending: 1,
@@ -75,8 +74,6 @@ export default function RecentUser() {
     );
 
   const userDetail = userDetailData?.data;
-
-  // ── Helpers ──────────────────────────────────────────────────────────────────
 
   const getActiveContent = (): any[] => {
     if (!userDetail) return [];
@@ -113,7 +110,6 @@ export default function RecentUser() {
 
   const handleTabSwitch = (tab: "Post" | "Attending" | "Saved") => {
     setActiveTab(tab);
-    // Pages for other tabs are preserved; only the selected tab's page is used in the query
   };
 
   const handleUserClick = (user: any) => {
@@ -143,7 +139,6 @@ export default function RecentUser() {
 
   const activeMeta = getActiveMeta();
 
-  // ── Overview pagination (table of users) ─────────────────────────────────────
   const overviewTotalPages = overview?.meta?.totalPage ?? 1;
 
   if (isLoading)
@@ -154,7 +149,6 @@ export default function RecentUser() {
   return (
     <RoleRedirect allowedRole='ADMIN'>
       <div className='min-h-screen bg-background !rounded-2xl mt-10'>
-        {/* ── Header ────────────────────────────────────────────────────────── */}
         <header className='backdrop-blur-sm sticky top-0 z-40'>
           <div className='container mx-auto px-4 py-4'>
             <div className='flex items-center justify-between'>
@@ -174,7 +168,6 @@ export default function RecentUser() {
           </div>
         </header>
 
-        {/* ── Users table ───────────────────────────────────────────────────── */}
         <div className='container mx-auto py-6'>
           <div className='bg-card border border-border rounded-xl overflow-hidden'>
             {/* Table Header */}
@@ -230,7 +223,6 @@ export default function RecentUser() {
           onPageChange={setOverviewPage}
         />
 
-        {/* ── User detail modal ─────────────────────────────────────────────── */}
         <Dialog
           open={!!selectedUser}
           onOpenChange={() => setSelectedUser(null)}
@@ -369,7 +361,6 @@ export default function RecentUser() {
                   )}
                 </div>
 
-                {/* ── Per-tab pagination ─────────────────────────────────── */}
                 {activeMeta && activeMeta.totalPage > 1 && (
                   <GlobalPagination
                     currentPage={tabPages[activeTab]}

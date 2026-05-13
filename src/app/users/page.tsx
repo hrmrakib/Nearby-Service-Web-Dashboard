@@ -80,8 +80,6 @@ export default function UserManagement() {
 
   const userDetail = userDetailData?.data;
 
-  // ── Helpers ──────────────────────────────────────────────────────────────────
-
   const getActiveContent = (): any[] => {
     if (!userDetail) return [];
     switch (activeTab) {
@@ -153,7 +151,6 @@ export default function UserManagement() {
   return (
     <RoleRedirect allowedRole='ADMIN'>
       <div className='min-h-screen bg-background !rounded-2xl mt-10'>
-        {/* ── Header ────────────────────────────────────────────────────────── */}
         <header className='backdrop-blur-sm sticky top-0 z-40'>
           <div className='container mx-auto px-4 py-4'>
             <div className='flex items-center justify-between'>
@@ -173,7 +170,6 @@ export default function UserManagement() {
           </div>
         </header>
 
-        {/* ── Users table ───────────────────────────────────────────────────── */}
         <div className='container mx-auto py-6'>
           <div className='bg-card border border-border rounded-xl overflow-hidden'>
             {/* Table Header */}
@@ -229,7 +225,6 @@ export default function UserManagement() {
           onPageChange={setPage}
         />
 
-        {/* ── User detail modal ─────────────────────────────────────────────── */}
         <Dialog
           open={!!selectedUser}
           onOpenChange={() => setSelectedUser(null)}

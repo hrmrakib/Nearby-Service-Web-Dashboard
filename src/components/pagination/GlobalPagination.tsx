@@ -11,8 +11,6 @@ export default function GlobalPagination({
 }: PaginationProps) {
   if (totalPages <= 1) return null;
 
-  // Logic to calculate the range of visible pages (3 at a time)
-  // This shifts the window: 1-3, then 4-6, etc.
   const groupSize = 3;
   const currentGroup = Math.ceil(currentPage / groupSize);
   const startPage = (currentGroup - 1) * groupSize + 1;
