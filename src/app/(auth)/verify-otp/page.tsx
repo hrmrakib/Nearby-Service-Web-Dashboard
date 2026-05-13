@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
 import type React from "react";
 import { useState, useRef, useEffect } from "react";
@@ -7,6 +8,7 @@ import { Input } from "@/components/ui/input";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import Image from "next/image";
+import { toast } from "sonner";
 
 export default function VerifyAccountPage() {
   const [otp, setOtp] = useState(["", "", "", ""]);
@@ -84,7 +86,8 @@ export default function VerifyAccountPage() {
 
       // Redirect to success page or dashboard
       router.push("/auth/login?verified=true");
-    } catch (error) {
+    } catch (error: any) {
+      toast.error(error?.data?.message || "Something went wrong");
       setError("Invalid verification code. Please try again.");
     } finally {
       setIsLoading(false);
@@ -102,7 +105,8 @@ export default function VerifyAccountPage() {
       // Clear current OTP and focus first input
       setOtp(["", "", "", ""]);
       inputRefs.current[0]?.focus();
-    } catch (error) {
+    } catch (error: any) {
+      toast.error(error?.data?.message || "Something went wrong");
       setError("Failed to resend code. Please try again.");
     } finally {
       setIsResending(false);

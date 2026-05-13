@@ -8,11 +8,7 @@ import { Input } from "@/components/ui/input";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Dialog, DialogContent } from "@/components/ui/dialog";
 import Image from "next/image";
-import {
-  useGetAllUsersQuery,
-  useGetUserByIdQuery,
-} from "@/redux/features/user/userAPI";
-import GlobalPagination from "@/components/pagination/GlobalPagination";
+import { useGetUserByIdQuery } from "@/redux/features/user/userAPI";
 import { useDebounce } from "@/hooks/useDebounce";
 import Spinner from "@/components/loading/Spinner";
 import { RoleRedirect } from "@/components/auth/RoleRedirect";
@@ -61,8 +57,6 @@ export default function RecentUser() {
   const overview = overviewData?.data;
 
   const recentUsers = overview?.recentUsers;
-
-  console.log({ overview });
 
   const { data: userDetailData, isLoading: isUserDetailLoading } =
     useGetUserByIdQuery(

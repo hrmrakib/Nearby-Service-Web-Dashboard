@@ -110,9 +110,7 @@ export default function ReportDashboard() {
     if (!selectedReport) return;
 
     try {
-      const res = await removeReportedPostMutation(
-        selectedReport?.postId,
-      ).unwrap();
+      await removeReportedPostMutation(selectedReport?.postId).unwrap();
     } catch (error) {
       console.error("Error deleting post:", error);
     } finally {
