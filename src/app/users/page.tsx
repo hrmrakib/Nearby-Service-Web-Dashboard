@@ -14,6 +14,7 @@ import {
 } from "@/redux/features/user/userAPI";
 import GlobalPagination from "@/components/pagination/GlobalPagination";
 import { useDebounce } from "@/hooks/useDebounce";
+import Spinner from "@/components/loading/Spinner";
 
 // Updated Interface to match your API response structure where needed
 interface User {
@@ -59,16 +60,17 @@ export default function UserManagement() {
     limit: 5,
     search: debouncedSearchTerm,
   });
-  const { data: userDetailData } = useGetUserByIdQuery(
-    {
-      id: selectedUser?.id || "",
-      params: {
-        page: 1,
-        limit: 5,
+  const { data: userDetailData, isLoading: isUserDetailLoading } =
+    useGetUserByIdQuery(
+      {
+        id: selectedUser?.id || "",
+        params: {
+          page: 1,
+          limit: 5,
+        },
       },
-    },
-    { skip: !selectedUser?.id },
-  );
+      { skip: !selectedUser?.id },
+    );
 
   const usersFromApi = userData?.data || [];
   const totalPages = userData?.meta?.totalPage || 1;
@@ -283,7 +285,15 @@ export default function UserManagement() {
 
               {/* Content Grid */}
               <div className='grid grid-cols-1 md:grid-cols-3 gap-6'>
-                {getActiveContent().length > 0 ? (
+                {isUserDetailLoading && (
+                  <div className='col-span-3'>
+                    <div className='flex items-center justify-center h-20'>
+                      <Spinner />
+                    </div>
+                  </div>
+                )}
+
+                {getActiveContent().length > 0 && !isUserDetailLoading ? (
                   getActiveContent().map((item: any) => (
                     <div
                       key={item._id}
@@ -333,7 +343,9 @@ export default function UserManagement() {
                   ))
                 ) : (
                   <div className='col-span-3 py-10 text-center text-gray-500'>
-                    No {activeTab.toLowerCase()} content found.
+                    {!isUserDetailLoading && (
+                      <p>No {activeTab.toLowerCase()} content found.</p>
+                    )}
                   </div>
                 )}
               </div>
