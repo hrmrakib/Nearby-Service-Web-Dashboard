@@ -32,7 +32,7 @@ const StatCard = ({
         </div>
         <div>
           <p className='text-lg font-medium text-[#374151] mb-1'>{title}</p>
-          <p className='text-4xl font-bold text-[#374151]'>{value}</p>
+          <p className='text-4xl font-bold text-[#374151]'>{value || 0}</p>
         </div>
       </div>
     </CardContent>

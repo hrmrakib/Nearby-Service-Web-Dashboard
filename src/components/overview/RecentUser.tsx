@@ -13,8 +13,8 @@ import { useDebounce } from "@/hooks/useDebounce";
 import Spinner from "@/components/loading/Spinner";
 import { RoleRedirect } from "@/components/auth/RoleRedirect";
 import { useGetOverviewQuery } from "@/redux/features/overview/overviewAPI";
+import GlobalPagination from "../pagination/GlobalPagination";
 
-// Updated Interface to match your API response structure where needed
 interface User {
   id: string;
   name: string;
@@ -28,19 +28,16 @@ interface User {
   location: string;
   date: string;
   time: string;
-  posts: ContentItem[];
-  attending: ContentItem[];
-  saved: ContentItem[];
 }
 
-interface ContentItem {
-  id: string;
-  title: string;
-  image: string;
-  distance: string;
-  rating: number;
-  description: string;
+// Per-tab page state
+interface TabPages {
+  Post: number;
+  Attending: number;
+  Saved: number;
 }
+
+const LIMIT = 9;
 
 export default function RecentUser() {
   const [selectedUser, setSelectedUser] = useState<User | null>(null);
@@ -48,6 +45,14 @@ export default function RecentUser() {
     "Post",
   );
   const [searchTerm, setSearchTerm] = useState("");
+  const [overviewPage, setOverviewPage] = useState(1);
+
+  // Separate page per tab so switching tabs doesn't reset other tabs' pagination
+  const [tabPages, setTabPages] = useState<TabPages>({
+    Post: 1,
+    Attending: 1,
+    Saved: 1,
+  });
 
   const debouncedSearchTerm = useDebounce(searchTerm, 600);
 
@@ -55,27 +60,63 @@ export default function RecentUser() {
     searchTerm: debouncedSearchTerm,
   });
   const overview = overviewData?.data;
-
-  const recentUsers = overview?.recentUsers;
+  const recentUsers = overview?.recentUsers || [];
 
   const { data: userDetailData, isLoading: isUserDetailLoading } =
     useGetUserByIdQuery(
       {
         id: selectedUser?.id || "",
         params: {
-          page: 1,
-          limit: 5,
+          page: tabPages[activeTab],
+          limit: LIMIT,
         },
       },
       { skip: !selectedUser?.id },
     );
 
-  const usersFromApi = recentUsers || [];
+  const userDetail = userDetailData?.data;
 
-  const userDetail = userDetailData?.data || [];
+  // ── Helpers ──────────────────────────────────────────────────────────────────
+
+  const getActiveContent = (): any[] => {
+    if (!userDetail) return [];
+    switch (activeTab) {
+      case "Post":
+        return userDetail.posts?.data || [];
+      case "Attending":
+        return userDetail.attendingEvents?.data || [];
+      case "Saved":
+        return userDetail.savedPosts?.data?.filter((s: any) => s.postId) || [];
+      default:
+        return [];
+    }
+  };
+
+  // Pull the meta for whichever tab is active
+  const getActiveMeta = (): { page: number; totalPage: number } | null => {
+    if (!userDetail) return null;
+    switch (activeTab) {
+      case "Post":
+        return userDetail.posts?.meta ?? null;
+      case "Attending":
+        return userDetail.attendingEvents?.meta ?? null;
+      case "Saved":
+        return userDetail.savedPosts?.meta ?? null;
+      default:
+        return null;
+    }
+  };
+
+  const handleTabPageChange = (newPage: number) => {
+    setTabPages((prev) => ({ ...prev, [activeTab]: newPage }));
+  };
+
+  const handleTabSwitch = (tab: "Post" | "Attending" | "Saved") => {
+    setActiveTab(tab);
+    // Pages for other tabs are preserved; only the selected tab's page is used in the query
+  };
 
   const handleUserClick = (user: any) => {
-    // Mapping API response to the User interface for the Modal
     const mappedUser: User = {
       id: user._id,
       name: user.name || "N/A",
@@ -92,29 +133,18 @@ export default function RecentUser() {
         hour: "2-digit",
         minute: "2-digit",
       }),
-      // Note: If your API provides specific posts/saved items, map them here.
-      // Using empty arrays or mock data if those endpoints are separate.
-      posts: [],
-      attending: [],
-      saved: [],
     };
 
     setSelectedUser(mappedUser);
     setActiveTab("Post");
+    // Reset all tab pages when opening a new user
+    setTabPages({ Post: 1, Attending: 1, Saved: 1 });
   };
 
-  const getActiveContent = () => {
-    switch (activeTab) {
-      case "Post":
-        return userDetail.posts?.data || [];
-      case "Attending":
-        return userDetail.attendingEvents?.data || [];
-      case "Saved":
-        return userDetail.savedPosts?.data?.filter((s: any) => s.postId) || [];
-      default:
-        return [];
-    }
-  };
+  const activeMeta = getActiveMeta();
+
+  // ── Overview pagination (table of users) ─────────────────────────────────────
+  const overviewTotalPages = overview?.meta?.totalPage ?? 1;
 
   if (isLoading)
     return (
@@ -124,53 +154,46 @@ export default function RecentUser() {
   return (
     <RoleRedirect allowedRole='ADMIN'>
       <div className='min-h-screen bg-background !rounded-2xl mt-10'>
+        {/* ── Header ────────────────────────────────────────────────────────── */}
         <header className='backdrop-blur-sm sticky top-0 z-40'>
           <div className='container mx-auto px-4 py-4'>
             <div className='flex items-center justify-between'>
-              <div className='flex items-center gap-4'>
-                <h1 className='text-xl font-semibold text-[#292929]'>
-                  Recent User
-                </h1>
-              </div>
-
-              <div className='flex items-center gap-4'>
-                <div className='relative'>
-                  <Search className='absolute left-3 top-1/2 transform -translate-y-1/2 text-[#292929] h-4 w-4' />
-                  <Input
-                    placeholder='Search'
-                    className='pl-10 w-64 bg-input border-border text-primary'
-                    value={searchTerm}
-                    onChange={(e) => setSearchTerm(e.target.value)}
-                  />
-                </div>
+              <h1 className='text-xl font-semibold text-[#292929]'>
+                Recent User
+              </h1>
+              <div className='relative'>
+                <Search className='absolute left-3 top-1/2 -translate-y-1/2 text-[#292929] h-4 w-4' />
+                <Input
+                  placeholder='Search'
+                  className='pl-10 w-64 bg-input border-border text-primary'
+                  value={searchTerm}
+                  onChange={(e) => setSearchTerm(e.target.value)}
+                />
               </div>
             </div>
           </div>
         </header>
 
+        {/* ── Users table ───────────────────────────────────────────────────── */}
         <div className='container mx-auto py-6'>
           <div className='bg-card border border-border rounded-xl overflow-hidden'>
             {/* Table Header */}
-            <div className='bg-[#17CA2A] text-success-foreground'>
-              <div className='grid grid-cols-4 gap-4 px-6 py-4 font-medium'>
-                <div className='text-center text-lg font-medium text-white'>
-                  SL
-                </div>
-                <div className='text-center text-lg font-medium text-white'>
-                  User Name
-                </div>
-                <div className='text-center text-lg font-medium text-white'>
-                  Email
-                </div>
-                <div className='text-center text-lg font-medium text-white'>
-                  Action
-                </div>
+            <div className='bg-[#17CA2A]'>
+              <div className='grid grid-cols-4 gap-4 px-6 py-4'>
+                {["SL", "User Name", "Email", "Action"].map((h) => (
+                  <div
+                    key={h}
+                    className='text-center text-lg font-medium text-white'
+                  >
+                    {h}
+                  </div>
+                ))}
               </div>
             </div>
 
             {/* Table Body */}
             <div className='divide-y divide-border'>
-              {usersFromApi?.map((user: any, index: number) => (
+              {recentUsers.map((user: any, index: number) => (
                 <div
                   key={user._id}
                   className='grid grid-cols-4 items-center gap-4 px-6 py-4 hover:bg-secondary/50 transition-colors'
@@ -188,7 +211,7 @@ export default function RecentUser() {
                     <Button
                       variant='ghost'
                       size='icon'
-                      className='h-6 w-6 rounded-full text-center hover:bg-secondary'
+                      className='h-6 w-6 rounded-full hover:bg-secondary'
                       onClick={() => handleUserClick(user)}
                     >
                       <Info className='h-4 w-4 text-[#292929] hover:text-[#17CA2A]' />
@@ -200,6 +223,14 @@ export default function RecentUser() {
           </div>
         </div>
 
+        {/* Overview-level pagination (user list) */}
+        <GlobalPagination
+          currentPage={overviewPage}
+          totalPages={overviewTotalPages}
+          onPageChange={setOverviewPage}
+        />
+
+        {/* ── User detail modal ─────────────────────────────────────────────── */}
         <Dialog
           open={!!selectedUser}
           onOpenChange={() => setSelectedUser(null)}
@@ -210,14 +241,12 @@ export default function RecentUser() {
                 {/* Profile Header */}
                 <div className='flex flex-col md:flex-row gap-6'>
                   <div className='flex-shrink-0'>
-                    <div className='relative'>
-                      <Avatar className='h-24 w-24 border-4 border-[#17CA2A]'>
-                        <AvatarImage src={selectedUser.avatar} />
-                        <AvatarFallback className='text-2xl bg-gray-200 text-[#292929]'>
-                          {selectedUser.name.charAt(0)}
-                        </AvatarFallback>
-                      </Avatar>
-                    </div>
+                    <Avatar className='h-24 w-24 border-4 border-[#17CA2A]'>
+                      <AvatarImage src={selectedUser.avatar} />
+                      <AvatarFallback className='text-2xl bg-gray-200 text-[#292929]'>
+                        {selectedUser.name.charAt(0)}
+                      </AvatarFallback>
+                    </Avatar>
                     <div className='mt-4 space-y-2'>
                       <div className='text-2xl font-bold text-[#292929]'>
                         {selectedUser.name}
@@ -238,24 +267,24 @@ export default function RecentUser() {
 
                   <div className='flex-1 flex items-center'>
                     <div className='flex gap-10 text-center'>
-                      <div>
-                        <div className='text-xl font-bold text-[#292929]'>
-                          {selectedUser.stats.posts}
+                      {[
+                        { label: "Posts", value: selectedUser.stats.posts },
+                        {
+                          label: "Followers",
+                          value: selectedUser.stats.followers,
+                        },
+                        {
+                          label: "Following",
+                          value: selectedUser.stats.following,
+                        },
+                      ].map(({ label, value }) => (
+                        <div key={label}>
+                          <div className='text-xl font-bold text-[#292929]'>
+                            {value}
+                          </div>
+                          <div className='text-sm text-[#666]'>{label}</div>
                         </div>
-                        <div className='text-sm text-[#666]'>Posts</div>
-                      </div>
-                      <div>
-                        <div className='text-xl font-bold text-[#292929]'>
-                          {selectedUser.stats.followers}
-                        </div>
-                        <div className='text-sm text-[#666]'>Followers</div>
-                      </div>
-                      <div>
-                        <div className='text-xl font-bold text-[#292929]'>
-                          {selectedUser.stats.following}
-                        </div>
-                        <div className='text-sm text-[#666]'>Following</div>
-                      </div>
+                      ))}
                     </div>
                   </div>
                 </div>
@@ -271,7 +300,7 @@ export default function RecentUser() {
                           ? "border-[#17CA2A] text-[#15B826] font-medium"
                           : "border-transparent text-[#292929] hover:text-[#17CA2A]"
                       }`}
-                      onClick={() => setActiveTab(tab)}
+                      onClick={() => handleTabSwitch(tab)}
                     >
                       {tab}
                     </Button>
@@ -279,16 +308,12 @@ export default function RecentUser() {
                 </div>
 
                 {/* Content Grid */}
-                <div className='grid grid-cols-1 md:grid-cols-3 gap-6'>
-                  {isUserDetailLoading && (
-                    <div className='col-span-3'>
-                      <div className='flex items-center justify-center h-20'>
-                        <Spinner />
-                      </div>
+                <div className='grid grid-cols-1 md:grid-cols-3 gap-6 min-h-[200px]'>
+                  {isUserDetailLoading ? (
+                    <div className='col-span-3 flex items-center justify-center h-48'>
+                      <Spinner />
                     </div>
-                  )}
-
-                  {getActiveContent().length > 0 && !isUserDetailLoading ? (
+                  ) : getActiveContent().length > 0 ? (
                     getActiveContent().map((item: any) => (
                       <div
                         key={item._id}
@@ -308,7 +333,7 @@ export default function RecentUser() {
                           className='w-full h-48 object-cover'
                         />
                         <div className='p-4 space-y-3'>
-                          {activeTab !== "Saved" && (
+                          {activeTab !== "Saved" ? (
                             <>
                               <h3 className='font-semibold text-[#292929]'>
                                 {item.title}
@@ -321,9 +346,7 @@ export default function RecentUser() {
                                   </span>
                                 </div>
                                 <div className='flex items-center gap-1'>
-                                  <span>
-                                    <Eye className='h-3 w-3' />
-                                  </span>
+                                  <Eye className='h-3 w-3' />
                                   <span>{item.views}</span>
                                 </div>
                               </div>
@@ -331,8 +354,7 @@ export default function RecentUser() {
                                 {item.description}
                               </p>
                             </>
-                          )}
-                          {activeTab === "Saved" && (
+                          ) : (
                             <p className='text-sm text-[#292929]'>
                               Post ID: {item.postId?._id}
                             </p>
@@ -342,12 +364,19 @@ export default function RecentUser() {
                     ))
                   ) : (
                     <div className='col-span-3 py-10 text-center text-gray-500'>
-                      {!isUserDetailLoading && (
-                        <p>No {activeTab.toLowerCase()} content found.</p>
-                      )}
+                      <p>No {activeTab.toLowerCase()} content found.</p>
                     </div>
                   )}
                 </div>
+
+                {/* ── Per-tab pagination ─────────────────────────────────── */}
+                {activeMeta && activeMeta.totalPage > 1 && (
+                  <GlobalPagination
+                    currentPage={tabPages[activeTab]}
+                    totalPages={activeMeta.totalPage}
+                    onPageChange={handleTabPageChange}
+                  />
+                )}
               </div>
             )}
           </DialogContent>

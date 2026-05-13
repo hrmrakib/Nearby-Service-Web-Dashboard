@@ -46,7 +46,6 @@ export default function RootLayout({
               >
                 <AppSidebar />
                 <main className='relative flex-1 min-h-screen w-full bg-body-bg p-6'>
-                  {/* <SidebarTrigger className='text-black' /> */}
                   <Header />
                   {children}
                 </main>

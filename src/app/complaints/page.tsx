@@ -47,7 +47,7 @@ export default function ReportDashboard() {
   // Fetch real data
   const { data: apiResponse, isLoading } = useGetReportsQuery({
     page,
-    limit: 5,
+    limit: 9,
   });
   const [removeReportedPostMutation, { isLoading: isRemovingReportPost }] =
     useRemoveReportedPostMutation();
