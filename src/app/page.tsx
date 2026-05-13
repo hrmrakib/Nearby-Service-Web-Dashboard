@@ -10,6 +10,7 @@ import {
   Users,
 } from "lucide-react";
 import UserManagement from "./users/page";
+import { RoleRedirect } from "@/components/auth/RoleRedirect";
 
 const StatCard = ({
   title,
@@ -39,49 +40,51 @@ const StatCard = ({
 
 export default function Dashboard() {
   return (
-    <div className='min-h-screen bg-transparent'>
-      {/* Main Content */}
-      <div className='py-8'>
-        {/* Stats Cards */}
-        <div className='grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-8'>
-          <StatCard title='Total Users' value='455' icon={Users} />
-          <StatCard
-            title='Total Events'
-            value='23'
-            icon={CalendarDays}
-            change='13%'
-            isNegative={true}
-          />
-          <StatCard title='Total User' value='230' icon={Handshake} />
-          <StatCard
-            title='Total Services'
-            value='12'
-            icon={ClipboardList}
-            change='13%'
-            isNegative={true}
-          />
-          <StatCard
-            title='Total Alerts'
-            value='12'
-            icon={TriangleAlert}
-            change='13%'
-            isNegative={true}
-          />
-          <StatCard
-            title='Total Reports'
-            value='12'
-            icon={ClipboardList}
-            change='13%'
-            isNegative={true}
-          />
-        </div>
+    <RoleRedirect allowedRole='ADMIN'>
+      <div className='min-h-screen bg-transparent'>
+        {/* Main Content */}
+        <div className='py-8'>
+          {/* Stats Cards */}
+          <div className='grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-8'>
+            <StatCard title='Total Users' value='455' icon={Users} />
+            <StatCard
+              title='Total Events'
+              value='23'
+              icon={CalendarDays}
+              change='13%'
+              isNegative={true}
+            />
+            <StatCard title='Total User' value='230' icon={Handshake} />
+            <StatCard
+              title='Total Services'
+              value='12'
+              icon={ClipboardList}
+              change='13%'
+              isNegative={true}
+            />
+            <StatCard
+              title='Total Alerts'
+              value='12'
+              icon={TriangleAlert}
+              change='13%'
+              isNegative={true}
+            />
+            <StatCard
+              title='Total Reports'
+              value='12'
+              icon={ClipboardList}
+              change='13%'
+              isNegative={true}
+            />
+          </div>
 
-        {/* Chart Section */}
+          {/* Chart Section */}
 
-        <div>
-          <UserManagement />
+          <div>
+            <UserManagement />
+          </div>
         </div>
       </div>
-    </div>
+    </RoleRedirect>
   );
 }
