@@ -16,6 +16,7 @@ import GlobalPagination from "@/components/pagination/GlobalPagination";
 import { useDebounce } from "@/hooks/useDebounce";
 import Spinner from "@/components/loading/Spinner";
 import { RoleRedirect } from "@/components/auth/RoleRedirect";
+import { useGetOverviewQuery } from "@/redux/features/overview/overviewAPI";
 
 // Updated Interface to match your API response structure where needed
 interface User {
@@ -45,22 +46,24 @@ interface ContentItem {
   description: string;
 }
 
-export default function UserManagement() {
+export default function RecentUser() {
   const [selectedUser, setSelectedUser] = useState<User | null>(null);
   const [activeTab, setActiveTab] = useState<"Post" | "Attending" | "Saved">(
     "Post",
   );
-  const [page, setPage] = useState(1);
   const [searchTerm, setSearchTerm] = useState("");
 
   const debouncedSearchTerm = useDebounce(searchTerm, 600);
 
-  // Fetching real data
-  const { data: userData, isLoading } = useGetAllUsersQuery({
-    page,
-    limit: 5,
-    search: debouncedSearchTerm,
+  const { data: overviewData, isLoading } = useGetOverviewQuery({
+    searchTerm: debouncedSearchTerm,
   });
+  const overview = overviewData?.data;
+
+  const recentUsers = overview?.recentUsers;
+
+  console.log({ overview });
+
   const { data: userDetailData, isLoading: isUserDetailLoading } =
     useGetUserByIdQuery(
       {
@@ -73,14 +76,9 @@ export default function UserManagement() {
       { skip: !selectedUser?.id },
     );
 
-  const usersFromApi = userData?.data || [];
-  const totalPages = userData?.meta?.totalPage || 1;
+  const usersFromApi = recentUsers || [];
 
   const userDetail = userDetailData?.data || [];
-
-  const handlePageChange = (page: number) => {
-    setPage(page);
-  };
 
   const handleUserClick = (user: any) => {
     // Mapping API response to the User interface for the Modal
@@ -146,7 +144,7 @@ export default function UserManagement() {
                   <Search className='absolute left-3 top-1/2 transform -translate-y-1/2 text-[#292929] h-4 w-4' />
                   <Input
                     placeholder='Search'
-                    className='pl-10 w-64 bg-input border-border'
+                    className='pl-10 w-64 bg-input border-border text-primary'
                     value={searchTerm}
                     onChange={(e) => setSearchTerm(e.target.value)}
                   />
@@ -360,12 +358,6 @@ export default function UserManagement() {
             )}
           </DialogContent>
         </Dialog>
-
-        <GlobalPagination
-          currentPage={page}
-          totalPages={totalPages}
-          onPageChange={handlePageChange}
-        />
       </div>
     </RoleRedirect>
   );

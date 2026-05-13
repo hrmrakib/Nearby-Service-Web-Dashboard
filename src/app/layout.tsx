@@ -7,6 +7,7 @@ import AppSidebar from "@/components/sidebar/AppSide";
 import Header from "@/components/header/Header";
 import { Toaster } from "sonner";
 import Providers from "@/redux/features/Providers";
+import AppInitializer from "@/components/AppInitializer/AppInitilizer";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -34,22 +35,25 @@ export default function RootLayout({
         className={`${geistSans.variable} ${geistMono.variable} antialiased bg-body-bg`}
       >
         <Providers>
-          <SidebarProvider>
-            <Toaster />
-            <div
-              className='flex min-h-screen bg-bodyBg w-full'
-              style={{
-                background: "linear-gradient(180deg, #315D62 0%, #6ECEDA 100%)",
-              }}
-            >
-              <AppSidebar />
-              <main className='relative flex-1 min-h-screen w-full bg-body-bg p-6'>
-                {/* <SidebarTrigger className='text-black' /> */}
-                <Header />
-                {children}
-              </main>
-            </div>
-          </SidebarProvider>
+          <AppInitializer>
+            <SidebarProvider>
+              <Toaster />
+              <div
+                className='flex min-h-screen bg-bodyBg w-full'
+                style={{
+                  background:
+                    "linear-gradient(180deg, #315D62 0%, #6ECEDA 100%)",
+                }}
+              >
+                <AppSidebar />
+                <main className='relative flex-1 min-h-screen w-full bg-body-bg p-6'>
+                  {/* <SidebarTrigger className='text-black' /> */}
+                  <Header />
+                  {children}
+                </main>
+              </div>
+            </SidebarProvider>
+          </AppInitializer>
         </Providers>
       </body>
     </html>

@@ -113,7 +113,6 @@ export default function ReportDashboard() {
       const res = await removeReportedPostMutation(
         selectedReport?.postId,
       ).unwrap();
-      console.log(res);
     } catch (error) {
       console.error("Error deleting post:", error);
     } finally {

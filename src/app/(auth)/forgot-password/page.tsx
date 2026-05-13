@@ -39,9 +39,6 @@ export default function ForgotPasswordPage() {
       // Simulate API call
       await new Promise((resolve) => setTimeout(resolve, 2000));
 
-      // In a real app, you would send the reset email here
-      console.log("Password reset email sent to:", email);
-
       // Redirect to a success page or show success message
       alert("Password reset link has been sent to your email!");
     } catch (error) {

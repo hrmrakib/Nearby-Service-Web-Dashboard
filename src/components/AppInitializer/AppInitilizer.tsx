@@ -12,9 +12,11 @@ export default function AppInitializer({
 }) {
   const dispatch = useDispatch();
   const token =
-    typeof window !== "undefined" ? localStorage.getItem("access_token") : null;
+    typeof window !== "undefined" ? localStorage.getItem("accessToken") : null;
 
   const { data, isLoading } = useGetProfileQuery({}, { skip: !token });
+
+  console.log(data?.data);
 
   useEffect(() => {
     if (!token) {
@@ -27,7 +29,9 @@ export default function AppInitializer({
 
   useEffect(() => {
     if (data?.data) {
-      dispatch(setUser({ user: data.data, token: data.access_token || token }));
+      dispatch(
+        setUser({ user: data.data, token: data?.data?.accessToken || token }),
+      );
     }
   }, [data, token, dispatch]);
 

@@ -34,7 +34,7 @@ export function RoleRedirect({ allowedRole, children }: RoleRedirectProps) {
 
   useEffect(() => {
     if (authStatus === "unauthenticated") {
-      router.replace("/login");
+      // router.replace("/login");
     } else if (authStatus === "redirect_to_own_dashboard") {
       // Redirect logic based on their actual role
       if (user?.role === "ADMIN") {

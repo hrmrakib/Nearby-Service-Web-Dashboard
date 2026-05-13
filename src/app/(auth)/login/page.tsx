@@ -87,11 +87,8 @@ export default function SignInPage() {
       } else {
         toast.error(data?.message);
       }
-
-      console.log(await res.json());
     } catch (err: any) {
-      console.log({ err });
-      // toast.error(err?.data?.message);
+      toast.error(err?.data?.message);
       // setError("Login failed. Please try again.");
     } finally {
       setIsLoading(false);

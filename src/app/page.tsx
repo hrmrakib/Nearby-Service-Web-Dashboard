@@ -9,8 +9,9 @@ import {
   TriangleAlert,
   Users,
 } from "lucide-react";
-import UserManagement from "./users/page";
 import { RoleRedirect } from "@/components/auth/RoleRedirect";
+import { useGetOverviewQuery } from "@/redux/features/overview/overviewAPI";
+import RecentUser from "@/components/overview/RecentUser";
 
 const StatCard = ({
   title,
@@ -39,6 +40,9 @@ const StatCard = ({
 );
 
 export default function Dashboard() {
+  const { data: overviewData } = useGetOverviewQuery({});
+  const overview = overviewData?.data;
+
   return (
     <RoleRedirect allowedRole='ADMIN'>
       <div className='min-h-screen bg-transparent'>
@@ -46,42 +50,41 @@ export default function Dashboard() {
         <div className='py-8'>
           {/* Stats Cards */}
           <div className='grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-8'>
-            <StatCard title='Total Users' value='455' icon={Users} />
+            <StatCard
+              title='Total Users'
+              value={overview?.totalUsers}
+              icon={Users}
+            />
             <StatCard
               title='Total Events'
-              value='23'
+              value={overview?.totalEvents}
               icon={CalendarDays}
-              change='13%'
-              isNegative={true}
             />
-            <StatCard title='Total User' value='230' icon={Handshake} />
+            <StatCard
+              title='Total Deals'
+              value={overview?.totalDeals}
+              icon={Handshake}
+            />
             <StatCard
               title='Total Services'
-              value='12'
+              value={overview?.totalServices}
               icon={ClipboardList}
-              change='13%'
-              isNegative={true}
             />
             <StatCard
               title='Total Alerts'
-              value='12'
+              value={overview?.totalAlerts}
               icon={TriangleAlert}
-              change='13%'
-              isNegative={true}
             />
             <StatCard
               title='Total Reports'
-              value='12'
+              value={overview?.totalReports}
               icon={ClipboardList}
-              change='13%'
-              isNegative={true}
             />
           </div>
 
-          {/* Chart Section */}
-
+          {/* Recent user */}
           <div>
-            <UserManagement />
+            <RecentUser />
           </div>
         </div>
       </div>

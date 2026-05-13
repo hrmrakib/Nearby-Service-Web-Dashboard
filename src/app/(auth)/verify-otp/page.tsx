@@ -82,14 +82,10 @@ export default function VerifyAccountPage() {
       // Simulate API call
       await new Promise((resolve) => setTimeout(resolve, 2000));
 
-      // For demo purposes, accept any 4-digit code
-      console.log("[v0] OTP verification attempted:", otpCode);
-
       // Redirect to success page or dashboard
       router.push("/auth/login?verified=true");
     } catch (error) {
       setError("Invalid verification code. Please try again.");
-      console.log(error);
     } finally {
       setIsLoading(false);
     }
@@ -102,14 +98,12 @@ export default function VerifyAccountPage() {
     try {
       // Simulate API call
       await new Promise((resolve) => setTimeout(resolve, 1500));
-      console.log("[v0] Resend OTP requested");
 
       // Clear current OTP and focus first input
       setOtp(["", "", "", ""]);
       inputRefs.current[0]?.focus();
     } catch (error) {
       setError("Failed to resend code. Please try again.");
-      console.log(error);
     } finally {
       setIsResending(false);
     }
