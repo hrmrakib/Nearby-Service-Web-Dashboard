@@ -15,8 +15,6 @@ const StatCard = ({
   title,
   value,
   icon: Icon,
-  change,
-  isNegative = false,
 }: {
   title: string;
   value: string;

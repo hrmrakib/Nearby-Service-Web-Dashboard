@@ -2,7 +2,14 @@
 "use client";
 
 import { useState } from "react";
-import { Search, X, MapPin, Star, Info, AlertTriangle } from "lucide-react";
+import {
+  Search,
+  MapPin,
+  Star,
+  Info,
+  AlertTriangle,
+  Loader,
+} from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Dialog, DialogContent, DialogHeader } from "@/components/ui/dialog";
@@ -346,10 +353,14 @@ export default function ReportDashboard() {
                 Cancel
               </Button>
               <Button
-                className='flex-1 rounded-full bg-[#EF4444] text-white hover:bg-[#DC2626] shadow-md shadow-red-200'
+                disabled={isRemovingReportPost}
+                className='flex-1 rounded-full bg-[#EF4444] text-white hover:bg-[#DC2626] shadow-md shadow-red-200 flex items-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed'
                 onClick={handleFinalDelete}
               >
-                Confirm Delete
+                Confirm Delete{" "}
+                {isRemovingReportPost && (
+                  <Loader size={16} className='animate-spin' />
+                )}
               </Button>
             </div>
           </div>

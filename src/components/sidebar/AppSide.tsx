@@ -22,6 +22,8 @@ import {
 import { usePathname, useRouter } from "next/navigation";
 import Image from "next/image";
 import { useState } from "react";
+import { logout } from "@/service/authService";
+import { LogoutModal } from "../auth/LogoutModal";
 
 export default function DashboardSidebar() {
   const [isLogoutModalOpen, setIsLogoutModalOpen] = useState(false);
@@ -31,8 +33,15 @@ export default function DashboardSidebar() {
   console.log(pathname);
 
   const handleLogout = async () => {
-    // await logout();
-    router.push("/login");
+    try {
+      await logout();
+      localStorage.removeItem("accessToken");
+      // Close modal before navigating
+      setIsLogoutModalOpen(false);
+      router.push("/login");
+    } catch (error) {
+      console.error("Logout failed", error);
+    }
   };
 
   if (
@@ -151,11 +160,13 @@ export default function DashboardSidebar() {
             </button>
           </SidebarFooter>
         </Sidebar>
-        {/* <LogoutModal
+
+        {/* The Modal */}
+        <LogoutModal
           isOpen={isLogoutModalOpen}
           onClose={() => setIsLogoutModalOpen(false)}
           onConfirm={handleLogout}
-        /> */}
+        />
       </div>
     </>
   );

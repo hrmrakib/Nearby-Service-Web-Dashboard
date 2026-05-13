@@ -89,7 +89,7 @@ const settingsAPI = baseAPI.injectEndpoints({
     setCommunityGuidelines: builder.mutation({
       query: (data) => ({
         url: `/guidelines`,
-        method: "POST",
+        method: "PATCH",
         body: data,
       }),
       invalidatesTags: ["Settings"],
