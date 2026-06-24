@@ -40,7 +40,10 @@ const customBaseQuery: BaseQueryFn<
 
   const pathname = window?.location?.pathname || "";
 
-  if (result.error && result.error.status === 401) {
+  if (
+    (result.error && result.error.status === 401) ||
+    (result.error && result.error.status === 403)
+  ) {
     if (!isLoggingOut && pathname !== "/login") {
       isLoggingOut = true;
       localStorage?.removeItem("accessToken");
@@ -54,10 +57,13 @@ const customBaseQuery: BaseQueryFn<
         }, 400);
       }
     }
-  } else if (result.error && result.error.status === 403) {
-    alert("You need to verify your email to use this feature.");
-    if (window?.location?.href) window.location.href = "/profile";
-  } else if (result.error && result.error.status === 402) {
+  }
+
+  // else if (result.error && result.error.status === 403) {
+  //   alert("You need to verify your email to use this feature.");
+  //   if (window?.location?.href) window.location.href = "/profile";
+  // }
+  else if (result.error && result.error.status === 402) {
     alert("You need to upgrade your plan to use this feature.");
     if (window?.location?.href) window.location.href = "/#upgrade-plan";
   }

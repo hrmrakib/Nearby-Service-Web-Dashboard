@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 import { getCurrentUser } from "./service/authService";
 
-export async function middleware(request: Request) {
+export default async function proxy(request: Request) {
   // Fetch current user (authentication token)
   const token = await getCurrentUser();
 
