@@ -97,6 +97,15 @@ export default function DashboardSidebar() {
               />
 
               <NavItem
+                href='/records'
+                icon={Users}
+                label='Records'
+                active={
+                  pathname === "/records" || pathname.startsWith("/records/")
+                }
+              />
+
+              <NavItem
                 href='/complaints'
                 icon={TriangleAlert}
                 label='Complaints'
