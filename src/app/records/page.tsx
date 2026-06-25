@@ -3,28 +3,17 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
 import { useState } from "react";
-import {
-  Search,
-  CreditCard,
-  DollarSign,
-  Clock,
-  CheckCircle,
-  ChevronDown,
-} from "lucide-react";
+import { CreditCard, Clock, CheckCircle } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
 import { Dialog, DialogContent } from "@/components/ui/dialog";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import GlobalPagination from "@/components/pagination/GlobalPagination";
-import { useDebounce } from "@/hooks/useDebounce";
 import Spinner from "@/components/loading/Spinner";
 import { RoleRedirect } from "@/components/auth/RoleRedirect";
 import {
   useGetRecordsQuery,
   useMarkAsPaidMutation,
 } from "@/redux/features/record/recordAPI";
-
-// ─── Types ───────────────────────────────────────────────────────────────────
 
 type PayoutStatus = "PENDING" | "COMPLETED";
 
@@ -46,8 +35,6 @@ interface Payout {
   updatedAt: string;
 }
 
-// ─── Helpers ──────────────────────────────────────────────────────────────────
-
 const maskCard = (card: string) =>
   card && card.length > 4 ? `•••• •••• •••• ${card.slice(-4)}` : card || "N/A";
 
@@ -60,8 +47,6 @@ const formatDate = (iso: string) =>
 
 const formatTime = (iso: string) =>
   new Date(iso).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" });
-
-// ─── Status config — only PENDING & COMPLETED ────────────────────────────────
 
 const STATUS_CONFIG: Record<
   PayoutStatus,
@@ -91,8 +76,6 @@ function StatusBadge({ status }: { status: PayoutStatus }) {
   );
 }
 
-// ─── Stat Card ────────────────────────────────────────────────────────────────
-
 function StatCard({
   label,
   value,
@@ -115,27 +98,12 @@ function StatCard({
   );
 }
 
-// ─── Filter options ───────────────────────────────────────────────────────────
-
-const FILTER_OPTIONS: Array<{ label: string; value: PayoutStatus | "ALL" }> = [
-  { label: "All", value: "ALL" },
-  { label: "Pending", value: "PENDING" },
-  { label: "Completed", value: "COMPLETED" },
-];
-
-// ─── Main Component ───────────────────────────────────────────────────────────
-
-const LIMIT = 10;
-
 export default function PayoutManagement() {
   const [selectedPayout, setSelectedPayout] = useState<Payout | null>(null);
   const [page, setPage] = useState(1);
-  const [searchTerm, setSearchTerm] = useState("");
-  const [statusFilter, setStatusFilter] = useState<PayoutStatus | "ALL">("ALL");
-  const [statusDropdownOpen, setStatusDropdownOpen] = useState(false);
   const [markingId, setMarkingId] = useState<string | null>(null);
 
-  const debouncedSearch = useDebounce(searchTerm, 600);
+  const LIMIT = 10;
 
   const {
     data: recordData,
@@ -150,25 +118,8 @@ export default function PayoutManagement() {
 
   const allPayouts: Payout[] = recordData?.data ?? [];
   const totalPages: number = recordData?.meta?.totalPage ?? 1;
-  const totalAmount: number = allPayouts.reduce((s, p) => s + p.amount, 0);
-  const pendingCount: number = allPayouts.filter(
-    (p) => p.status === "PENDING",
-  ).length;
-  const completedCount: number = allPayouts.filter(
-    (p) => p.status === "COMPLETED",
-  ).length;
-
-  // Client-side search + status filter (if API doesn't support it)
-  const filtered = allPayouts.filter((p) => {
-    const q = debouncedSearch.toLowerCase();
-    const matchSearch =
-      !q ||
-      p.provider.name.toLowerCase().includes(q) ||
-      p.provider.email.toLowerCase().includes(q) ||
-      p._id.toLowerCase().includes(q);
-    const matchStatus = statusFilter === "ALL" || p.status === statusFilter;
-    return matchSearch && matchStatus;
-  });
+  const pendingCount = recordData?.pending ?? 0;
+  const completedCount = recordData?.complete ?? 0;
 
   const handleMarkAsPaid = async (id: string) => {
     try {
@@ -203,55 +154,6 @@ export default function PayoutManagement() {
               <h1 className='text-xl font-semibold text-[#292929]'>
                 Payout Records
               </h1>
-
-              <div className='flex items-center gap-2 flex-wrap'>
-                {/* Status filter dropdown */}
-                <div className='relative'>
-                  <button
-                    onClick={() => setStatusDropdownOpen((v) => !v)}
-                    className='flex items-center gap-2 px-3 py-2 rounded-lg border border-border bg-card text-sm text-[#292929] hover:border-[#17CA2A] transition-colors'
-                  >
-                    {FILTER_OPTIONS.find((o) => o.value === statusFilter)
-                      ?.label ?? "All"}
-                    <ChevronDown className='h-3.5 w-3.5 text-[#666]' />
-                  </button>
-                  {statusDropdownOpen && (
-                    <div className='absolute right-0 mt-1 w-36 bg-card border border-border rounded-xl shadow-lg z-50 overflow-hidden'>
-                      {FILTER_OPTIONS.map((opt) => (
-                        <button
-                          key={opt.value}
-                          onClick={() => {
-                            setStatusFilter(opt.value);
-                            setPage(1);
-                            setStatusDropdownOpen(false);
-                          }}
-                          className={`w-full text-left px-4 py-2 text-sm transition-colors hover:bg-secondary/50 ${
-                            statusFilter === opt.value
-                              ? "text-[#17CA2A] font-medium"
-                              : "text-[#292929]"
-                          }`}
-                        >
-                          {opt.label}
-                        </button>
-                      ))}
-                    </div>
-                  )}
-                </div>
-
-                {/* Search */}
-                <div className='relative'>
-                  <Search className='absolute left-3 top-1/2 -translate-y-1/2 text-[#292929] h-4 w-4' />
-                  <Input
-                    placeholder='Search provider or ID'
-                    className='pl-10 w-56 sm:w-64 bg-input border-border'
-                    value={searchTerm}
-                    onChange={(e) => {
-                      setSearchTerm(e.target.value);
-                      setPage(1);
-                    }}
-                  />
-                </div>
-              </div>
             </div>
           </div>
         </header>
@@ -259,18 +161,6 @@ export default function PayoutManagement() {
         <div className='container mx-auto px-4 py-6 space-y-6'>
           {/* ── Stat Cards ── */}
           <div className='grid grid-cols-2 md:grid-cols-4 gap-4'>
-            <StatCard
-              label='Total Payouts'
-              value={recordData?.meta?.total ?? allPayouts.length}
-              icon={<CreditCard className='h-5 w-5 text-[#17CA2A]' />}
-              accent='bg-[#17CA2A]/10'
-            />
-            <StatCard
-              label='Total Amount'
-              value={`$${totalAmount}`}
-              icon={<DollarSign className='h-5 w-5 text-blue-500' />}
-              accent='bg-blue-50'
-            />
             <StatCard
               label='Pending'
               value={pendingCount}
@@ -304,13 +194,13 @@ export default function PayoutManagement() {
             </div>
 
             <div className='divide-y divide-border'>
-              {filtered.length === 0 ? (
+              {allPayouts.length === 0 ? (
                 <div className='py-16 text-center text-gray-500'>
                   <CreditCard className='h-10 w-10 mx-auto mb-3 text-gray-300' />
                   <p>No payout records found.</p>
                 </div>
               ) : (
-                filtered.map((payout, index) => (
+                allPayouts.map((payout, index) => (
                   <div
                     key={payout._id}
                     className='hover:bg-secondary/50 transition-colors'
