@@ -351,7 +351,8 @@ export default function PayoutManagement() {
                     { label: "Payout ID", value: selectedPayout._id },
                     {
                       label: "Card",
-                      value: maskCard(selectedPayout.provider.card),
+                      // value: maskCard(selectedPayout.provider.card),
+                      value: selectedPayout.provider.card,
                     },
                     { label: "Amount", value: `$${selectedPayout.amount}` },
                     { label: "Service ID", value: selectedPayout.service },
